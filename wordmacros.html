@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Макросы Word | Методическое руководство</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg2: #121933;
+      --card: rgba(255,255,255,0.08);
+      --accent: #6d8cff;
+      --accent-2: #8b5cf6;
+      --text: #e5e7eb;
+      --muted: #c7d2fe;
+      --border: rgba(255,255,255,0.12);
+      --shadow: 0 20px 50px rgba(0,0,0,0.25);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top left, #1d2a57 0%, var(--bg) 45%), linear-gradient(135deg, var(--bg), var(--bg2));
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 1001;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .sidebar {
+      width: 320px;
+      background: rgba(8,12,26,0.92);
+      backdrop-filter: blur(16px);
+      color: white;
+      padding: 30px 22px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar h1 {
+      font-size: 22px;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .sidebar p {
+      font-size: 14px;
+      color: #c7d2fe;
+      margin-bottom: 24px;
+    }
+
+    .nav-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #93c5fd;
+      margin: 22px 0 10px;
+    }
+
+    .nav a {
+      display: block;
+      color: #e2e8f0;
+      text-decoration: none;
+      padding: 11px 14px;
+      border-radius: 14px;
+      margin-bottom: 8px;
+      transition: 0.2s ease;
+      font-size: 15px;
+      border: 1px solid transparent;
+    }
+
+    .nav a:hover,
+    .nav a.active {
+      background: rgba(255,255,255,0.08);
+      transform: translateX(4px);
+      border-color: rgba(255,255,255,0.08);
+    }
+
+    .sub-link {
+      font-size: 14px !important;
+      padding: 9px 14px 9px 26px !important;
+      color: #cbd5e1 !important;
+      margin-bottom: 4px !important;
+      border-left: 2px solid rgba(255,255,255,0.08);
+      margin-left: 8px;
+    }
+
+    .sub-link:hover {
+      border-left: 2px solid var(--accent);
+    }
+
+    .content {
+      flex: 1;
+      padding: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(109,140,255,0.22), rgba(139,92,246,0.18));
+      border: 1px solid var(--border);
+      color: white;
+      padding: 48px;
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      top: -80px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.2), transparent 70%);
+    }
+
+    .hero h2 {
+      font-size: 40px;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 18px;
+      max-width: 900px;
+      color: #e0e7ff;
+    }
+
+    .section {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+      scroll-margin-top: 24px;
+    }
+
+    .section h2 {
+      font-size: 30px;
+      margin-bottom: 20px;
+      color: #c7d2fe;
+    }
+
+    .section p {
+      margin-bottom: 18px;
+      font-size: 18px;
+    }
+
+    .step {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .step-number {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      font-weight: bold;
+      padding: 8px 14px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+      font-size: 15px;
+    }
+
+    .image-placeholder {
+      background: rgba(255,255,255,0.05);
+      border: 2px dashed rgba(255,255,255,0.25);
+      text-align: center;
+      color: #cbd5e1;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      border-radius: 18px;
+      margin-top: 22px;
+      padding: 20px;
+    }
+
+    .note {
+      background: rgba(245,158,11,0.14);
+      border-left: 6px solid #f59e0b;
+      border-radius: 18px;
+      padding: 18px 20px;
+      margin-top: 20px;
+      font-size: 17px;
+    }
+
+    .code-block {
+      background: #0f172a;
+      color: #e2e8f0;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 22px;
+      margin: 20px 0;
+      overflow-x: auto;
+      font-family: Consolas, monospace;
+      font-size: 15px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .footer {
+      text-align: center;
+      color: #cbd5e1;
+      font-size: 14px;
+      padding: 20px 0 30px;
+    }
+
+    @media (max-width: 980px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .layout {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 300px;
+        z-index: 1000;
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .content {
+        padding: 80px 18px 20px;
+      }
+
+      .hero {
+        padding: 30px;
+      }
+
+      .hero h2 {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <button class="menu-toggle" onclick="toggleMenu()">☰ Меню</button>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <h1>Методическое руководство</h1>
+      <p>Электронная версия методички по цифровым инструментам для студентов.</p>
+
+      <nav class="nav" onclick="closeMenuOnMobile(event)">
+        <div class="nav-title">Основные разделы</div>
+        <a href="index.html">Главная</a>
+        <a href="introduction.html">Введение</a>
+        <a href="wordmacros.html" class="active">Макросы Word</a>
+        <a href="yandex.html">Яндекс Проекты</a>
+        <a href="qwen.html">Qwen</a>
+        <a href="vscode.html">Visual Studio Code</a>
+        <a href="conclusion.html" id="nav-conclusion">Заключение</a>
+
+        <div class="nav-title">Подразделы страницы</div>
+        <a href="#macro-preparation" class="sub-link">Подготовка перед использованием макросов</a>
+        <a href="#macro-recording" class="sub-link">Самостоятельная запись макросов</a>
+        <a href="#table-formatting" class="sub-link">Оформление таблиц</a>
+        <a href="#page-numbering" class="sub-link">Добавление нумерации</a>
+        <a href="#heading-formatting" class="sub-link">Оформление заголовков</a>
+        <a href="#toc-formatting" class="sub-link">Оформление содержания</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <section class="hero">
+        <h2>Работа с оформлением файла через макросы в Word</h2>
+        <p>
+          В данном разделе рассматриваются способы подготовки Word к работе с макросами,
+          их добавление и самостоятельная запись для автоматизации оформления документов.
+        </p>
+      </section>
+
+      <section class="section" id="macro-preparation">
+        <h2>Подготовка перед использованием макросов</h2>
+
+        <div class="step">
+          <div class="step-number">Шаг 1</div>
+          <p>Прожмите комбинацию клавиш <strong>Alt + F11</strong>. После этого откроется диалоговое окно редактора макросов.</p>
+         <img src="images/1.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 2</div>
+          <p>В открывшееся окно вставьте необходимый код макроса и сохраните изменения.</p>
+         <img src="images/2.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 3</div>
+          <p>Чтобы добавить ещё один макрос, в этом же диалоговом окне сверху выберите пункт <strong>Insert</strong>, затем нажмите <strong>Module</strong>.</p>
+          <img src="images/3.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 4</div>
+          <p>Если действия выполнены правильно, откроется новое окно модуля. В него необходимо вставить нужный код.</p>
+          <p>При необходимости добавления новых макросов повторите действия, указанные в предыдущем шаге.</p>
+          <img src="images/4.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+        </div>
+
+        <div class="note">
+          <strong>Примечание:</strong> Перед вставкой макросов рекомендуется сохранить документ и использовать проверенный код, чтобы избежать ошибок при автоматизации оформления.
+        </div>
+      </section>
+
+      <section class="section" id="macro-recording">
+        <h2>Самостоятельная запись макросов</h2>
+
+        <p>Макросы можно записывать самостоятельно, используя встроенные возможности Microsoft Word. Для этого необходимо выполнить следующие действия.</p>
+
+        <div class="step">
+          <div class="step-number">Шаг 1</div>
+          <p>Откройте на верхней панели вкладку <strong>«Вид»</strong>, затем выберите <strong>«Макросы»</strong>. Во втором случае необходимо нажать именно на надпись снизу, а не на значок макроса.</p>
+          <img src="images/5.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 2</div>
+          <p>В появившемся окне нажмите кнопку <strong>«Запись макроса…»</strong>.</p>
+          <img src="images/6.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 3</div>
+          <p>Далее введите любое имя макроса и нажмите <strong>«ОК»</strong>.</p>
+          <img src="images/7.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 4</div>
+          <p>После этого начнётся запись макроса. На данном этапе вручную выполните необходимое оформление документа, которое вы хотите автоматизировать.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 5</div>
+          <p>После завершения оформления документа необходимо остановить запись макроса. Для этого нажмите на ту же кнопку, которая использовалась в первом пункте.</p>
+          <img src="images/8.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 6</div>
+          <p>Чтобы выполнить записанный макрос, нажмите на значок <strong>макроса</strong>, выберите нужный макрос из списка и нажмите кнопку <strong>«Выполнить»</strong>.</p>
+          <img src="images/9.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+        </div>
+
+        <div class="note">
+          <strong>Примечание:</strong> Данный способ удобен в том случае, если требуется быстро сохранить последовательность действий по оформлению документа и использовать её повторно в других файлах.
+        </div>
+      </section>
+
+      <section class="section" id="table-formatting">
+        <h2>Оформление таблиц</h2>
+
+        <p>Для оформления таблиц в документе можно использовать отдельный макрос. Для этого необходимо вставить в окно редактора следующий код и сохранить его.</p>
+
+        <div class="code-block">
+Sub FormatTables()
+    Dim tbl As Table
+    For Each tbl In ActiveDocument.Tables
+        With tbl.Range
+            .Font.Name = "Times New Roman"
+            .Font.Size = 12
+            With .ParagraphFormat
+                .LineSpacingRule = wdLineSpaceSingle
+                .Alignment = wdAlignParagraphLeft
+                .FirstLineIndent = 0
+            End With
+        End With
+    Next tbl
+End Sub
+        </div>
+
+        <p>Для того чтобы оформить таблицу, необходимо сначала создать её вручную и добавить в неё текстовое содержимое.</p>
+        <p>Фактически данный макрос не создаёт таблицу автоматически, а применяет к уже существующей таблице единое текстовое оформление.</p>
+        <p>Таким образом, данный код позволяет быстро привести текст внутри таблиц к единому стилю, что особенно удобно при оформлении учебных и научных документов.</p>
+
+        <div class="note">
+          <strong>Примечание:</strong> Полностью автоматизировать создание таблиц с помощью данного макроса не получится, так как он отвечает только за форматирование уже существующих таблиц.
+        </div>
+      </section>
+
+      <section class="section" id="page-numbering">
+        <h2>Добавление нумерации</h2>
+
+        <p>Для автоматического добавления нумерации страниц можно использовать отдельный макрос. Для этого необходимо вставить в окно редактора следующий код и сохранить его.</p>
+
+        <div class="code-block">
+Sub SetupPageNumbers()
+Dim sec As Section
+Set sec = ActiveDocument.Sections(1)
+
+sec.Footers(wdHeaderFooterPrimary).Range.Delete
+
+With sec.Footers(wdHeaderFooterPrimary).Range
+.Fields.Add Range:=sec.Footers(wdHeaderFooterPrimary).Range, Type:=wdFieldPage
+.ParagraphFormat.Alignment = wdAlignParagraphCenter
+.Font.Name = "Times New Roman"
+.Font.Size = 14
+End With
+End Sub
+        </div>
+
+        <p>Данный макрос добавляет нумерацию страниц, начиная с первой страницы документа.</p>
+
+        <p>После запуска макроса номер страницы будет автоматически размещён в нижней части страницы по центру и оформлен шрифтом <strong>Times New Roman</strong> размером <strong>14</strong>.</p>
+
+        <p>Такой способ удобен для быстрого добавления базовой нумерации без ручной настройки колонтитулов.</p>
+
+        <div class="note">
+          <strong>Примечание:</strong> Скрыть номера первых двух страниц только с помощью данного кода не получится, так как для этого необходимо использовать разделы документа и дополнительную настройку структуры Word-файла.
+        </div>
+      </section>
+<section class="section" id="heading-formatting">
+  <h2>Оформление заголовков</h2>
+
+  <p>
+    Для оформления заголовков в документе можно использовать отдельный макрос.
+    Для этого необходимо вставить следующий код в окно редактора и сохранить его.
+  </p>
+
+  <div class="code-block">
+Sub FormatHeading()
+    With Selection.ParagraphFormat
+        .Alignment = wdAlignParagraphLeft
+        .LineSpacingRule = wdLineSpace1pt5
+        .FirstLineIndent = 0
+        .OutlineLevel = 1
+        .SpaceBefore = 0
+        .SpaceAfter = 0
+    End With
+    With Selection.Font
+        .Name = "Times New Roman"
+        .Size = 14
+        .Bold = True
+    End With
+End Sub
+  </div>
+
+  <p>
+    Чтобы воспользоваться данным кодом, необходимо сначала выделить нужный
+    заголовок в документе.
+  </p>
+
+  <p>
+    После этого нужно открыть список доступных макросов и выбрать
+    соответствующий макрос для оформления заголовка.
+  </p>
+
+  <p>
+    После выполнения макроса заголовок будет выровнен по левому краю,
+    оформлен шрифтом <strong>Times New Roman</strong>, размером
+    <strong>14</strong> и полужирным начертанием.
+  </p>
+
+  <div class="note">
+    <strong>Примечание:</strong> Данный макрос применяется только к тому тексту,
+    который был предварительно выделен пользователем.
+  </div>
+</section>
+<section class="section" id="toc-formatting">
+  <h2>Оформление содержания</h2>
+
+  <p>
+    Для автоматического создания содержания в документе можно использовать
+    отдельный макрос. Для этого необходимо вставить следующий код и сохранить его.
+  </p>
+
+  <div class="code-block">
+Sub CreateTableOfContents()
+    Dim toc As TableOfContents
+    Set toc = ActiveDocument.TablesOfContents.Add(Range:=Selection.Range, _
+        RightAlignPageNumbers:=True, _
+        UseHeadingStyles:=True, _
+        UpperHeadingLevel:=1, _
+        LowerHeadingLevel:=3)
+    With toc.Range.Font
+        .Name = "Times New Roman"
+        .Size = 14
+    End With
+End Sub
+  </div>
+  <div class="step">
+  <p>
+    Данный код используется после применения макроса из предыдущего пункта,
+    предназначенного для оформления заголовков.
+  </p>
+
+  <p>
+    Чтобы создать содержание, необходимо установить курсор на пустую строку
+    в том месте документа, где должно располагаться содержание.
+  </p>
+
+  <p>
+    После этого нужно запустить соответствующий макрос, и Word автоматически
+    сформирует содержание на основе оформленных заголовков.
+  </p>
+   
+     <img src="images/10.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+   </div>
+
+  <div class="note">
+    <strong>Примечание:</strong> Для корректной работы данного макроса
+    заголовки в документе должны быть предварительно оформлены с помощью
+    макроса из предыдущего подраздела.
+  </div>
+</section>
+      <div class="footer">
+        © 2026 Методическое руководство для студентов
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+
+    function closeMenuOnMobile(e) {
+      if (window.innerWidth <= 980 && e.target.tagName === 'A') {
+        document.getElementById('sidebar').classList.remove('open');
+      }
+    }
+  </script>
+</body>
+</html>

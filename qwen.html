@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QWEN | Методическое руководство</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg2: #121933;
+      --accent: #6d8cff;
+      --accent-2: #8b5cf6;
+      --text: #e5e7eb;
+      --border: rgba(255,255,255,0.12);
+      --shadow: 0 20px 50px rgba(0,0,0,0.25);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top left, #1d2a57 0%, var(--bg) 45%), linear-gradient(135deg, var(--bg), var(--bg2));
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 1001;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .sidebar {
+      width: 320px;
+      background: rgba(8,12,26,0.92);
+      backdrop-filter: blur(16px);
+      color: white;
+      padding: 30px 22px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar h1 {
+      font-size: 22px;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .sidebar p {
+      font-size: 14px;
+      color: #c7d2fe;
+      margin-bottom: 24px;
+    }
+
+    .nav-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #93c5fd;
+      margin: 22px 0 10px;
+    }
+
+    .nav a {
+      display: block;
+      color: #e2e8f0;
+      text-decoration: none;
+      padding: 11px 14px;
+      border-radius: 14px;
+      margin-bottom: 8px;
+      transition: 0.2s ease;
+      font-size: 15px;
+      border: 1px solid transparent;
+    }
+
+    .nav a:hover,
+    .nav a.active {
+      background: rgba(255,255,255,0.08);
+      transform: translateX(4px);
+      border-color: rgba(255,255,255,0.08);
+    }
+
+    .sub-link {
+      font-size: 14px !important;
+      padding: 9px 14px 9px 26px !important;
+      color: #cbd5e1 !important;
+      margin-bottom: 4px !important;
+      border-left: 2px solid rgba(255,255,255,0.08);
+      margin-left: 8px;
+    }
+
+    .sub-link:hover {
+      border-left: 2px solid var(--accent);
+    }
+
+    .content {
+      flex: 1;
+      padding: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(109,140,255,0.22), rgba(139,92,246,0.18));
+      border: 1px solid var(--border);
+      color: white;
+      padding: 48px;
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      top: -80px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.2), transparent 70%);
+    }
+
+    .hero h2 {
+      font-size: 40px;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 18px;
+      max-width: 900px;
+      color: #e0e7ff;
+    }
+
+    .section {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+      scroll-margin-top: 24px;
+    }
+
+    .section h2 {
+      font-size: 30px;
+      margin-bottom: 20px;
+      color: #c7d2fe;
+    }
+
+    .section p {
+      margin-bottom: 18px;
+      font-size: 18px;
+    }
+
+    .step {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .step-number {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      font-weight: bold;
+      padding: 8px 14px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+      font-size: 15px;
+    }
+
+    .image-placeholder {
+      background: rgba(255,255,255,0.05);
+      border: 2px dashed rgba(255,255,255,0.25);
+      text-align: center;
+      color: #cbd5e1;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      border-radius: 18px;
+      margin-top: 22px;
+      padding: 20px;
+    }
+
+    .note {
+      background: rgba(245,158,11,0.14);
+      border-left: 6px solid #f59e0b;
+      border-radius: 18px;
+      padding: 18px 20px;
+      margin-top: 20px;
+      font-size: 17px;
+    }
+.table-wrap {
+  overflow-x: auto;
+  margin: 24px 0;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  font-size: 17px;
+}
+
+.custom-table th,
+.custom-table td {
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 16px 18px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.custom-table th {
+  background: rgba(109,140,255,0.18);
+  color: #e0e7ff;
+  font-weight: bold;
+}
+
+.custom-table tr:nth-child(even) {
+  background: rgba(255,255,255,0.03);
+}
+
+.table-caption {
+  font-size: 18px;
+  font-weight: bold;
+  color: #c7d2fe;
+  margin-bottom: 12px;
+}
+    .footer {
+      text-align: center;
+      color: #cbd5e1;
+      font-size: 14px;
+      padding: 20px 0 30px;
+    }
+
+    @media (max-width: 980px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .layout {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 300px;
+        z-index: 1000;
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .content {
+        padding: 80px 18px 20px;
+      }
+
+      .hero {
+        padding: 30px;
+      }
+
+      .hero h2 {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <button class="menu-toggle" onclick="toggleMenu()">☰ Меню</button>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <h1>Методическое руководство</h1>
+      <p>Электронная версия методички по цифровым инструментам для студентов.</p>
+
+      <nav class="nav" onclick="closeMenuOnMobile(event)">
+        <div class="nav-title">Основные разделы</div>
+        <a href="index.html">Главная</a>
+        <a href="introduction.html">Введение</a>
+        <a href="wordmacros.html">Макросы Word</a>
+        <a href="yandex.html">Яндекс Проекты</a>
+        <a href="qwen.html" class="active">Qwen</a>
+        <a href="vscode.html" class="nav-link">Visual Studio Code</a>
+        <a href="conclusion.html" id="nav-conclusion">Заключение</a>
+
+        <div class="nav-title">Подразделы страницы</div>
+        <a href="#qwen-basics" class="sub-link">Базовые принципы взаимодействия</a>
+        <a href="#generation-mode" class="sub-link">Выбор режима генерации</a>
+        <a href="#model-selection" class="sub-link">Выбор языковой модели</a>
+        <a href="#effective-prompt" class="sub-link">Структура эффективного запроса</a>
+        <a href="#study-materials" class="sub-link">Работа с учебными материалами</a>
+        <a href="#query-optimization" class="sub-link">Оптимизация запросов</a>
+        <a href="#session-models" class="sub-link">Модели организации сессий</a>
+        <a href="#shared-access" class="sub-link">Совместный доступ</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <section class="hero">
+        <h2>Работа с ИИ-ассистентом QWEN</h2>
+        <p>
+          QWEN — универсальный ИИ-помощник для учебной деятельности:
+          от анализа текстов и составления планов до редактирования,
+          академического переформулирования и работы с файлами.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>О сервисе</h2>
+
+        <p>
+          <strong>QWEN</strong> — это мощная языковая модель, доступная бесплатно
+          через веб-интерфейс. Она умеет анализировать тексты, писать планы,
+          переформулировать материал в академический стиль и работать
+          с загруженными файлами.
+        </p>
+
+        <p>
+          Данный инструмент можно использовать на всех этапах учебной работы:
+          от поиска идей и подготовки структуры до финальной редактуры текста.
+        </p>
+
+        <p>
+          QWEN предлагает несколько режимов работы, включая
+          <strong>быстрый</strong>, <strong>мышление</strong> и
+          <strong>автоматический</strong>, а также выбор различных моделей
+          под разные задачи.
+        </p>
+
+        <p>
+          Сервис хорошо понимает русскоязычные академические тексты и,
+          в отличие от некоторых зарубежных аналогов, стабильно работает
+          с учебными материалами на русском языке.
+        </p>
+
+        <p>
+          Дополнительным преимуществом является возможность загружать файлы
+          непосредственно в чат, что позволяет работать с материалами без
+          необходимости вручную копировать текст.
+        </p>
+
+        <div class="note">
+          <strong>Примечание:</strong> QWEN удобно использовать как универсального
+          помощника при написании рефератов, курсовых работ, подготовке к зачётам,
+          обработке источников и структурировании информации.
+        </div>
+      </section>
+
+      <section class="section" id="qwen-basics">
+        <h2>Базовые принципы взаимодействия</h2>
+
+        <p>
+          Работа с ИИ-ассистентом осуществляется через веб-интерфейс.
+          Основные элементы интерфейса представлены на рисунке ниже.
+        </p>
+
+        <div>
+          <img src="images/15.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+        </div>
+
+        <div class="step">
+          <div class="step-number">Элемент 1</div>
+          <p><strong>Левая панель навигации</strong></p>
+          <p>На левой панели расположены основные инструменты управления:</p>
+          <p>– <strong>«Новый чат»</strong> — создание новой сессии диалога;</p>
+          <p>– <strong>«Поиск в чатах»</strong> — поиск по истории взаимодействий;</p>
+          <p>– <strong>«Проекты»</strong> — организация тематических рабочих пространств;</p>
+          <p>– <strong>«Coder»</strong> — специализированный режим для работы с кодом.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Элемент 2</div>
+          <p><strong>Центральная область</strong></p>
+          <p>В центральной части интерфейса находятся:</p>
+          <p>– <strong>поле ввода запросов</strong> — основная зона для постановки задач;</p>
+          <p>– <strong>кнопка отправки</strong> — запуск генерации ответа.</p>
+        </div>
+
+        <div class="note">
+          <strong>Рекомендация:</strong> для каждого учебного проекта рекомендуется
+          создавать отдельный чат или использовать функцию <strong>«Проекты»</strong>
+          для систематизации материалов.
+        </div>
+      </section>
+
+      <section class="section" id="generation-mode">
+        <h2>Выбор режима генерации</h2>
+
+        <p>
+          Интерфейс QWEN предоставляет возможность выбора режима работы.
+          Это позволяет адаптировать поведение модели под конкретную учебную задачу.
+        </p>
+
+        <div>
+          <img src="images/16.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+        </div>
+
+        <div class="step">
+          <div class="step-number">Режим 1</div>
+          <p>
+            <strong>«Автоматический»</strong> — система самостоятельно определяет
+            наиболее подходящий режим работы в зависимости от характера запроса.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Режим 2</div>
+          <p>
+            <strong>«Мышление»</strong> — режим расширенного анализа, при котором
+            задача рассматривается более глубоко и последовательно.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Режим 3</div>
+          <p>
+            <strong>«Быстрый»</strong> — режим оперативной генерации ответа
+            без дополнительной детализации.
+          </p>
+        </div>
+
+        <div class="note">
+          <strong>Рекомендация:</strong> по умолчанию рекомендуется использовать
+          <strong>«Автоматический»</strong> режим. На режим
+          <strong>«Мышление»</strong> целесообразно переключаться при подготовке
+          аналитических разделов курсовых и рефератов. Режим
+          <strong>«Быстрый»</strong> подходит для коротких уточнений и
+          оперативных учебных запросов.
+        </div>
+      </section>
+
+      <section class="section" id="model-selection">
+        <h2>Выбор языковой модели</h2>
+
+        <p>
+          QWEN функционирует на базе семейства языковых моделей
+          <strong>Qwen3.5</strong>. Пользователю доступен выбор конкретной модели
+          в зависимости от поставленной учебной задачи.
+        </p>
+
+        <div>
+          <img src="images/17.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+        </div>
+
+        <div class="step">
+          <div class="step-number">Модель 1</div>
+          <p>
+            <strong>Qwen3.5-Plus</strong> — универсальная модель для текстовых
+            и мультимодальных задач.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Модель 2</div>
+          <p>
+            <strong>Qwen3.5-Flash</strong> — высокопроизводительная модель,
+            ориентированная на быстрое выполнение запросов.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Модель 3</div>
+          <p>
+            <strong>Qwen3.5-Omni-Plus</strong> — наиболее мощная мультимодальная
+            модель, подходящая для более сложных задач.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Дополнительно</div>
+          <p>
+            Также могут быть доступны специализированные версии с открытым исходным
+            кодом, включая модели <strong>397B-A17B</strong>,
+            <strong>122B-A10B</strong>, а также более ранние версии.
+          </p>
+        </div>
+
+        <div class="note">
+          <strong>Рекомендация:</strong> для стандартных образовательных задач
+          обычно достаточно модели <strong>Qwen3.5-Plus</strong>.
+          Переключение на другие модели рекомендуется только при наличии
+          специфических требований к задаче.
+        </div>
+      </section>
+<section class="section" id="effective-prompt">
+  <h2>Структура эффективного запроса</h2>
+
+  <p>
+    Для получения качественных и полезных результатов при работе с
+    <strong>QWEN</strong> рекомендуется формулировать запросы по определённой структуре.
+  </p>
+
+  <p>
+    Чем точнее пользователь задаёт контекст, задачу, ограничения и формат ответа,
+    тем выше вероятность получить корректный и пригодный для учебной работы результат.
+  </p>
+
+  <div class="table-wrap">
+    <div class="table-caption">Таблица 1 – Структура эффективного запроса</div>
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>Элемент</th>
+          <th>Описание</th>
+          <th>Пример формулировки</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Контекст</strong></td>
+          <td>Указание дисциплины, уровня подготовки и цели запроса</td>
+          <td>«В рамках курса "Методология научных исследований", уровень – бакалавриат, 2 курс»</td>
+        </tr>
+        <tr>
+          <td><strong>Задача</strong></td>
+          <td>Чёткое описание требуемого действия</td>
+          <td>«Необходимо составить план аналитического обзора по теме...»</td>
+        </tr>
+        <tr>
+          <td><strong>Ограничения</strong></td>
+          <td>Требования к объёму, стилю и источникам</td>
+          <td>«Объём – до 1500 знаков, стиль – академический, без использования непроверенных источников»</td>
+        </tr>
+        <tr>
+          <td><strong>Формат</strong></td>
+          <td>Предпочтительная форма представления ответа</td>
+          <td>«Ответ представить в виде нумерованного списка с краткими пояснениями»</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Использование данной структуры позволяет уменьшить вероятность получения
+    слишком общего, неточного или плохо оформленного ответа.
+  </p>
+
+  <p>
+    На практике особенно важно не ограничиваться короткими фразами, а задавать
+    запрос так, как если бы вы формулировали техническое задание исполнителю.
+  </p>
+
+  <p>
+    Пример корректно сформулированного запроса в интерфейсе QWEN представлен ниже.
+  </p>
+
+  <div>
+    <img src="images/18.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+  </div>
+
+  <div class="note">
+    <strong>Рекомендация:</strong> при подготовке учебных материалов полезно заранее
+    продумывать структуру запроса и включать в него тему, цель, формат ответа
+    и ограничения, чтобы сразу получить более качественный результат.
+  </div>
+</section>
+<section class="section" id="study-materials">
+  <h2>Работа с учебными материалами</h2>
+
+  <p>
+    При работе с QWEN особенно важно правильно организовать загрузку
+    и анализ учебных материалов. От структуры документов и порядка
+    взаимодействия с ассистентом зависит качество итогового результата.
+  </p>
+
+  <p>
+    Для повышения эффективности рекомендуется соблюдать следующие правила
+    при подготовке и загрузке документов.
+  </p>
+
+  <div class="step">
+    <div class="step-number">Рекомендация 1</div>
+    <p>
+      Материалы целесообразно подготавливать <strong>тематическими группами</strong>,
+      по 3–5 файлов на одну рабочую сессию.
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Рекомендация 2</div>
+    <p>
+      Каждый файл должен иметь <strong>понятное и содержательное название</strong>,
+      отражающее его тему или назначение.
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Рекомендация 3</div>
+    <p>
+      При загрузке источников рекомендуется кратко обозначать цель их анализа.
+    </p>
+    <div>
+      <img src="images/19.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Рекомендация 4</div>
+    <p>
+      После обработки загруженной группы материалов целесообразно запросить
+      у ассистента краткое резюме, выводы или структурированный итог.
+    </p>
+  </div>
+
+  <p>
+    Ниже представлен пример рекомендуемой последовательности взаимодействия
+    с ассистентом при работе с учебными материалами.
+  </p>
+
+  <div class="step">
+    <div class="step-number">Шаг 1</div>
+    <p>
+      <strong>Загрузка материалов:</strong><br>
+      <em>«Предоставляю 3 научных статьи по теме "Цифровая трансформация образования"»</em>
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 2</div>
+    <p>
+      <strong>Первичный аналитический запрос:</strong><br>
+      <em>«Выделите ключевые подходы, описанные в данных источниках»</em>
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 3</div>
+    <p>
+      <strong>Уточнение и сравнение:</strong><br>
+      <em>«Сравните представленные методики по критериям: применимость, ресурсоёмкость»</em>
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 4</div>
+    <p>
+      <strong>Фиксация результата:</strong><br>
+      <em>«Сформируйте таблицу сравнения для включения в курсовую работу»</em>
+    </p>
+    <div>
+      <img src="images/20.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Рекомендация:</strong> при работе с несколькими источниками полезно
+    строить диалог поэтапно: сначала получить обзор, затем сравнение,
+    а после — итоговую структурированную форму результата.
+  </div>
+</section>
+
+<section class="section" id="query-optimization">
+  <h2>Оптимизация запросов</h2>
+
+  <p>
+    При использовании нейросети QWEN качество получаемого результата напрямую
+    зависит от того, насколько точно, понятно и подробно сформулирован запрос.
+  </p>
+
+  <p>
+    Если запрос слишком общий, краткий или не содержит конкретной цели,
+    нейросеть может выдать поверхностный, неполный или недостаточно полезный ответ.
+  </p>
+
+  <p>
+    Примеры менее удачных и более эффективных формулировок представлены
+    в таблице ниже.
+  </p>
+
+  <div class="table-wrap">
+    <div class="table-caption">Таблица 2 – Рекомендации по повышению эффективности запросов</div>
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>Не рекомендуется</th>
+          <th>Рекомендуемая формулировка</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>«Расскажи про маркетинг»</td>
+          <td>«Предоставьте структурированный обзор основных концепций маркетинга для подготовки к семинару по дисциплине "Основы менеджмента"»</td>
+        </tr>
+        <tr>
+          <td>«Проверь текст»</td>
+          <td>«Выполните лингвистический анализ текста на соответствие академическому стилю: укажите стилистические ошибки, тавтологии, нарушения логики изложения»</td>
+        </tr>
+        <tr>
+          <td>«Найди источники»</td>
+          <td>«Сформулируйте поисковые запросы и ключевые слова для подбора научной литературы по теме Х в базах данных eLibrary, Scopus»</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Для повышения эффективности взаимодействия с QWEN рекомендуется соблюдать
+    следующие принципы.
+  </p>
+
+  <div class="step">
+    <div class="step-number">Принцип 1</div>
+    <p>Формулировать запросы максимально чётко и понятно.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Принцип 2</div>
+    <p>Указывать конкретную задачу, которую необходимо выполнить.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Принцип 3</div>
+    <p>Задавать желаемую структуру ответа.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Принцип 4</div>
+    <p>При необходимости разбивать большую задачу на несколько последовательных запросов.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Принцип 5</div>
+    <p>Использовать уточняющие запросы для доработки результата.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Принцип 6</div>
+    <p>Внимательно проверять полученную информацию перед использованием в учебной работе.</p>
+  </div>
+
+  <div class="note">
+    <strong>Вывод:</strong> чем точнее и профессиональнее сформулирован запрос,
+    тем выше вероятность получить ответ, пригодный для непосредственного
+    использования в учебной деятельности.
+  </div>
+</section>
+
+<section class="section" id="session-models">
+  <h2>Модели организации сессий</h2>
+
+  <p>
+    Эффективность работы с ИИ-ассистентом во многом зависит не только от содержания
+    запросов, но и от того, как организована сама логика взаимодействия.
+  </p>
+
+  <p>
+    Для учебной деятельности можно выделить две основные модели организации сессий.
+  </p>
+
+  <div class="step">
+    <div class="step-number">Модель 1</div>
+    <p><strong>«Единый контекст»</strong></p>
+    <p>
+      Данная модель применяется для последовательной работы над одним проектом
+      в рамках одного чата.
+    </p>
+    <p>
+      Её преимуществами являются сохранение истории диалога, целостность контекста
+      и возможность поэтапного развития темы без потери промежуточных результатов.
+    </p>
+    <p>
+      <strong>Рекомендация:</strong> для навигации внутри такого чата удобно использовать
+      служебные маркеры, например:
+      <em>[СТРУКТУРА], [АНАЛИЗ], [РЕДАКТУРА], [ПРОВЕРКА]</em>.
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Модель 2</div>
+    <p><strong>«Разделение по задачам»</strong></p>
+    <p>
+      Данная модель предполагает использование отдельных чатов для разных типов
+      учебной деятельности.
+    </p>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-caption">Таблица 3 – Типы учебных сессий с ИИ-ассистентом QWEN</div>
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>Тип сессии</th>
+          <th>Функция ассистента</th>
+          <th>Тип загружаемых материалов</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Аналитическая</strong></td>
+          <td>Обработка источников, выявление закономерностей</td>
+          <td>Научные статьи, статистические данные</td>
+        </tr>
+        <tr>
+          <td><strong>Структурная</strong></td>
+          <td>Разработка планов, схем, логики изложения</td>
+          <td>ТЗ, требования, примеры работ</td>
+        </tr>
+        <tr>
+          <td><strong>Редакционная</strong></td>
+          <td>Корректировка текста, проверка стиля и грамматики</td>
+          <td>Черновики, методические указания</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    На рисунке ниже представлен пример организации рабочего пространства
+    посредством создания нескольких тематических чатов.
+  </p>
+
+  <div>
+    <img src="images/21.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+  </div>
+
+  <div class="step">
+    <div class="step-number">Пример 1</div>
+    <p>
+      <strong>Чат «Анализ источников»</strong> — используется для обработки
+      научной литературы, выявления ключевых концепций и закономерностей.
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Пример 2</div>
+    <p>
+      <strong>Чат «Структура работы»</strong> — применяется для разработки плана,
+      логики исследования и схемы изложения материала.
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Пример 3</div>
+    <p>
+      <strong>Чат «Редактура»</strong> — используется для проверки черновиков
+      на соответствие академическим стандартам, исправления стилистических
+      и грамматических ошибок.
+    </p>
+  </div>
+
+  <p>
+    Такая организация позволяет сохранять контекст по каждому направлению работы,
+    избегать смешения разных учебных задач, быстро возвращаться к предыдущим этапам
+    и систематизировать историю взаимодействий с ассистентом.
+  </p>
+
+  <div class="note">
+    <strong>Рекомендация:</strong> присваивайте чатам понятные названия,
+    отражающие их функциональное назначение, чтобы упростить навигацию
+    по истории диалогов.
+  </div>
+</section>
+<section class="section" id="shared-access">
+  <h2>Совместный доступ</h2>
+
+  <p>
+    Платформа <strong>QWEN</strong> позволяет предоставлять доступ к чату
+    другим пользователям с помощью ссылки. Это удобно при совместной учебной
+    работе, обсуждении результатов и обмене материалами.
+  </p>
+
+  <div class="step">
+    <div class="step-number">Шаг 1</div>
+    <p>
+      Для предоставления доступа нажмите кнопку <strong>«Поделиться»</strong>,
+      расположенную под ответом ИИ-ассистента.
+    </p>
+    <div>
+      <img src="images/22.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 2</div>
+    <p>
+      После нажатия откроются дополнительные параметры и дальнейшие действия,
+      необходимые для формирования ссылки и передачи доступа.
+    </p>
+    <div>
+      <img src="images/23.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+    </div>
+  </div>
+
+  <p>
+    Данная функция может быть полезна в следующих случаях:
+  </p>
+
+  <div class="step">
+    <div class="step-number">Вариант 1</div>
+    <p>
+      <strong>Организация групповой работы</strong> над проектами, рефератами,
+      докладами и другими учебными заданиями.
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Вариант 2</div>
+    <p>
+      <strong>Демонстрация результатов преподавателю</strong>, например при
+      обсуждении структуры работы, промежуточных выводов или подготовленных материалов.
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Вариант 3</div>
+    <p>
+      <strong>Обмен лучшими практиками между обучающимися</strong>, включая
+      удачные промпты, шаблоны запросов и примеры взаимодействия с ассистентом.
+    </p>
+  </div>
+
+  <div class="note">
+    <strong>Важно:</strong> перед предоставлением доступа необходимо убедиться,
+    что в истории чата отсутствует конфиденциальная, личная или служебная информация,
+    не предназначенная для передачи другим пользователям.
+  </div>
+</section>
+      <div class="footer">
+        © 2026 Методическое руководство для студентов
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+
+    function closeMenuOnMobile(e) {
+      if (window.innerWidth <= 980 && e.target.tagName === 'A') {
+        document.getElementById('sidebar').classList.remove('open');
+      }
+    }
+  </script>
+</body>
+</html>

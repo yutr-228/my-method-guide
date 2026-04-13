@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Методическое руководство | Главная</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg2: #121933;
+      --accent: #6d8cff;
+      --accent-2: #8b5cf6;
+      --text: #e5e7eb;
+      --border: rgba(255,255,255,0.12);
+      --shadow: 0 20px 50px rgba(0,0,0,0.25);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top left, #1d2a57 0%, var(--bg) 45%), linear-gradient(135deg, var(--bg), var(--bg2));
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 1001;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 320px;
+      background: rgba(8,12,26,0.92);
+      backdrop-filter: blur(16px);
+      color: white;
+      padding: 30px 22px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar h1 {
+      font-size: 22px;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .sidebar p {
+      font-size: 14px;
+      color: #c7d2fe;
+      margin-bottom: 24px;
+    }
+
+    .nav-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #93c5fd;
+      margin: 22px 0 10px;
+    }
+
+    .nav a {
+      display: block;
+      color: #e2e8f0;
+      text-decoration: none;
+      padding: 11px 14px;
+      border-radius: 14px;
+      margin-bottom: 8px;
+      transition: 0.2s ease;
+      font-size: 15px;
+      border: 1px solid transparent;
+    }
+
+    .nav a:hover,
+    .nav a.active {
+      background: rgba(255,255,255,0.08);
+      transform: translateX(4px);
+      border-color: rgba(255,255,255,0.08);
+    }
+
+    .content {
+      flex: 1;
+      padding: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(109,140,255,0.22), rgba(139,92,246,0.18));
+      border: 1px solid var(--border);
+      color: white;
+      padding: 48px;
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      top: -80px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.2), transparent 70%);
+    }
+
+    .hero h2 {
+      font-size: 40px;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 18px;
+      max-width: 900px;
+      color: #e0e7ff;
+    }
+
+    .section {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+      scroll-margin-top: 24px;
+    }
+
+    .section h2 {
+      font-size: 30px;
+      margin-bottom: 20px;
+      color: #c7d2fe;
+    }
+
+    .section p {
+      margin-bottom: 18px;
+      font-size: 18px;
+    }
+
+    .section ul, .section ol {
+      margin-left: 30px;
+      margin-bottom: 20px;
+    }
+
+    .section li {
+      margin-bottom: 8px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      margin: 30px 0;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      transition: 0.2s ease;
+    }
+
+    .card:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateY(-4px);
+    }
+
+    .card h3 {
+      font-size: 22px;
+      margin-bottom: 12px;
+      color: #c7d2fe;
+    }
+
+    .card p {
+      font-size: 16px;
+      margin-bottom: 0;
+    }
+
+    .note {
+      background: rgba(245,158,11,0.14);
+      border-left: 6px solid #f59e0b;
+      border-radius: 18px;
+      padding: 18px 20px;
+      margin-top: 20px;
+      font-size: 17px;
+    }
+
+    .footer {
+      text-align: center;
+      color: #cbd5e1;
+      font-size: 14px;
+      padding: 20px 0 30px;
+    }
+
+    @media (max-width: 980px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .layout {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 300px;
+        z-index: 1000;
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .content {
+        padding: 80px 18px 20px;
+      }
+
+      .hero {
+        padding: 30px;
+      }
+
+      .hero h2 {
+        font-size: 30px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="toggleMenu()">☰ Меню</button>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <h1>Методическое руководство</h1>
+    <p>Электронная версия методички по цифровым инструментам для студентов.</p>
+
+    <nav class="nav">
+      <div class="nav-title">Основные разделы</div>
+      <a href="index.html" class="active">Главная</a>
+      <a href="introduction.html">Введение</a>
+      <a href="wordmacros.html">Макросы Word</a>
+      <a href="yandex.html">Яндекс Проекты</a>
+      <a href="qwen.html">Qwen</a>
+      <a href="vscode.html">Visual Studio Code</a>
+      <a href="conclusion.html">Заключение</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <section class="hero">
+      <h2>Электронное методическое руководство</h2>
+      <p>по использованию современных цифровых инструментов в учебной и исследовательской деятельности</p>
+    </section>
+
+    <section class="section">
+      <h2>О руководстве</h2>
+      <p>
+        В условиях цифровой трансформации образования владение интеллектуальными и программными средствами
+        обработки информации становится необходимой компетенцией современного специалиста. Использование систем
+        автоматизации, облачных сервисов, интеллектуальных ассистентов и специализированных рабочих сред
+        позволяет существенно повысить эффективность подготовки учебных материалов, анализа данных,
+        структурирования информации и выполнения исследовательских задач.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>Целевая аудитория</h2>
+      <p>Материалы руководства предназначены для:</p>
+      <ul>
+        <li>студентов бакалавриата и магистратуры;</li>
+        <li>аспирантов и молодых исследователей;</li>
+        <li>преподавателей образовательных организаций;</li>
+        <li>обучающихся, осваивающих цифровые инструменты для профессиональной деятельности.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Структура методического руководства</h2>
+      <p>Руководство включает в себя следующие тематические разделы:</p>
+      <div class="grid">
+        <div class="card">
+          <h3>Макросы Word</h3>
+          <p>Автоматизация оформления документов и оптимизация рутинных операций в текстовом редакторе.</p>
+        </div>
+        <div class="card">
+          <h3>Яндекс Проекты</h3>
+          <p>Организация облачного хранения материалов и совместной работы над проектами.</p>
+        </div>
+        <div class="card">
+          <h3>QWEN</h3>
+          <p>Использование интеллектуального ИИ-ассистента для анализа, генерации и редактирования учебных материалов.</p>
+        </div>
+        <div class="card">
+          <h3>Visual Studio Code</h3>
+          <p>Формирование единой цифровой рабочей среды для работы с документами, данными, кодом и интеллектуальными ассистентами.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Ожидаемые результаты освоения</h2>
+      <p>После изучения материалов руководства пользователь сможет:</p>
+      <ul>
+        <li>применять современные цифровые инструменты в учебной деятельности;</li>
+        <li>автоматизировать подготовку отчётов, рефератов и исследовательских материалов;</li>
+        <li>использовать ИИ-ассистентов для интеллектуальной обработки информации;</li>
+        <li>организовывать цифровое рабочее пространство для комплексной работы над проектами;</li>
+        <li>применять инструменты контроля версий и совместной работы;</li>
+        <li>выстраивать персональную интеллектуальную среду сопровождения учебной деятельности.</li>
+      </ul>
+      <div class="note">
+        <strong>💡 Рекомендация:</strong> Начните освоение с раздела, соответствующего вашим текущим задачам.
+        Для эффективной работы рекомендуется последовательное изучение всех материалов.
+      </div>
+    </section>
+
+    <div class="footer">
+      © 2026 Методическое руководство для студентов
+    </div>
+  </main>
+</div>
+
+<script>
+  function toggleMenu() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+
+  // Закрытие меню при клике на ссылку на мобильных устройствах
+  document.querySelectorAll('.nav a').forEach(link => {
+    link.addEventListener('click', function() {
+      if (window.innerWidth <= 980) {
+        document.getElementById('sidebar').classList.remove('open');
+      }
+    });
+  });
+
+  // Подсветка активного пункта меню (для главной страницы)
+  // Если страница index.html или корень сайта
+  const currentPath = window.location.pathname;
+  if (currentPath === '/' || currentPath.endsWith('index.html') || currentPath.endsWith('/')) {
+    document.querySelectorAll('.nav a').forEach(link => {
+      if (link.getAttribute('href') === 'index.html' || link.getAttribute('href') === './' || link.getAttribute('href') === '/') {
+        link.classList.add('active');
+      }
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,2252 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visual Studio Code — Методическое руководство</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg2: #121933;
+      --accent: #6d8cff;
+      --accent-2: #8b5cf6;
+      --text: #e5e7eb;
+      --border: rgba(255,255,255,0.12);
+      --shadow: 0 20px 50px rgba(0,0,0,0.25);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top left, #1d2a57 0%, var(--bg) 45%), linear-gradient(135deg, var(--bg), var(--bg2));
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    /* --- Кнопка мобильного меню --- */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 1001;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 320px;
+      background: rgba(8,12,26,0.92);
+      backdrop-filter: blur(16px);
+      color: white;
+      padding: 30px 22px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      transition: transform 0.3s ease;
+    }
+
+    .brand {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: #ffffff;
+    }
+
+    .brand-sub {
+      font-size: 14px;
+      color: #c7d2fe;
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+
+    .nav-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #93c5fd;
+      margin: 22px 0 10px;
+    }
+
+    .nav-link,
+    .sub-link,
+    .sub-sub-link {
+      display: block;
+      color: #e2e8f0;
+      text-decoration: none;
+      padding: 12px 14px;
+      border-radius: 14px;
+      margin-bottom: 10px;
+      transition: 0.2s ease;
+      font-size: 15px;
+      font-weight: 400;
+      border: 1px solid transparent;
+      background: transparent;
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    .nav-link:hover,
+    .sub-link:hover,
+    .sub-sub-link:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateX(4px);
+      border-color: rgba(255,255,255,0.08);
+    }
+
+    .nav-link.active {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.08);
+      transform: none;
+    }
+
+    .sub-link {
+      font-size: 15px;
+      padding: 10px 14px 10px 26px;
+      color: #cbd5e1;
+      margin-bottom: 12px;
+      margin-left: 8px;
+    }
+
+    .sub-sub-link {
+      font-size: 15px;
+      padding: 10px 14px 10px 34px;
+      color: #cbd5e1;
+      margin-bottom: 12px;
+      margin-left: 8px;
+    }
+
+    .main {
+      flex: 1;
+      padding: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(109,140,255,0.22), rgba(139,92,246,0.18));
+      border: 1px solid var(--border);
+      color: white;
+      padding: 48px;
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      top: -80px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.2), transparent 70%);
+    }
+
+    .hero h1 {
+      font-size: 40px;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 18px;
+      max-width: 900px;
+      color: #e0e7ff;
+    }
+
+    .section {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+      scroll-margin-top: 24px;
+    }
+
+    .section h2 {
+      font-size: 30px;
+      margin-bottom: 20px;
+      color: #c7d2fe;
+    }
+
+    .section h3,
+    .section h4 {
+      color: #dbeafe;
+      margin-top: 24px;
+    }
+
+    .section h3 {
+      font-size: 24px;
+      margin-bottom: 14px;
+    }
+
+    .section h4 {
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+
+    .section p {
+      margin-bottom: 18px;
+      font-size: 18px;
+    }
+
+    .step {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .step-number {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      font-weight: bold;
+      padding: 8px 14px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+      font-size: 15px;
+    }
+
+    .image-placeholder {
+      background: rgba(255,255,255,0.05);
+      border: 2px dashed rgba(255,255,255,0.25);
+      text-align: center;
+      color: #cbd5e1;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      border-radius: 18px;
+      margin-top: 22px;
+      padding: 20px;
+    }
+
+    .note {
+      background: rgba(245,158,11,0.14);
+      border-left: 6px solid #f59e0b;
+      border-radius: 18px;
+      padding: 18px 20px;
+      margin-top: 20px;
+      font-size: 17px;
+    }
+
+    .footer {
+      text-align: center;
+      color: #cbd5e1;
+      font-size: 14px;
+      padding: 20px 0 30px;
+    }
+
+    /* --- Стили для таблиц (как в QWEN) --- */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 24px 0;
+    }
+
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      font-size: 17px;
+    }
+
+    .custom-table th,
+    .custom-table td {
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 16px 18px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .custom-table th {
+      background: rgba(109,140,255,0.18);
+      color: #e0e7ff;
+      font-weight: bold;
+    }
+
+    .custom-table tr:nth-child(even) {
+      background: rgba(255,255,255,0.03);
+    }
+
+    .table-caption {
+      font-size: 18px;
+      font-weight: bold;
+      color: #c7d2fe;
+      margin-bottom: 12px;
+    }
+
+    /* Стили для иконок расширений */
+    .ext-img {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      padding: 8px;
+    }
+
+    .custom-table td:last-child {
+      text-align: center;
+    }
+
+    /* --- Адаптивность (как в QWEN) --- */
+    @media (max-width: 980px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .layout {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 300px;
+        z-index: 1000;
+        transform: translateX(-100%);
+        height: 100vh;
+        border-right: 1px solid var(--border);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main {
+        padding: 80px 18px 20px;
+      }
+
+      .hero {
+        padding: 30px;
+      }
+
+      .hero h1 {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Кнопка вызова мобильного меню -->
+  <button class="menu-toggle" onclick="toggleMenu()" aria-label="Открыть меню">☰ Меню</button>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">Методическое руководство</div>
+      <div class="brand-sub">Электронная версия методички по цифровым инструментам для студентов.</div>
+
+      <nav class="nav" onclick="closeMenuOnMobile(event)">
+        <div class="nav-title">Основные разделы</div>
+        <a href="index.html">Главная</a>
+        <a href="introduction.html" class="nav-link">Введение</a>
+        <a href="wordmacros.html" class="nav-link">Макросы Word</a>
+        <a href="yandex.html" class="nav-link">Яндекс Проекты</a>
+        <a href="qwen.html" class="nav-link">Qwen</a>
+        <a href="vscode.html" class="nav-link active">Visual Studio Code</a>
+        <a href="conclusion.html" class="nav-link">Заключение</a>
+
+        <div class="nav-title">Подразделы страницы</div>
+        <a href="#install-vscode" class="sub-link">Установка Visual Studio Code</a>
+        <a href="#github-link" class="sub-link">Привязка VS Code к GitHub</a>
+        <a href="#github-register" class="sub-sub-link">Регистрация на GitHub</a>
+        <a href="#install-git" class="sub-sub-link">Установка Git на компьютер</a>
+        <a href="#connect-github" class="sub-sub-link">Привязка GitHub к VS Code</a>
+        <a href="#install-extensions" class="sub-link">Установка расширений в Visual Studio Code</a>
+        <a href="#recommended-extensions" class="sub-link">Рекомендуемые расширения</a>
+        <a href="#create-project-folder" class="sub-link">Создание папки для проекта</a>
+        <a href="#work-with-files" class="sub-link">Работа с файлами в VS Code</a>
+        <a href="#open-files" class="sub-sub-link">Открытие файлов</a>
+        <a href="#organize-materials" class="sub-sub-link">Организация учебных материалов</a>
+        <a href="#multiple-files" class="sub-sub-link">Работа с несколькими файлами</a>
+        <a href="#search-in-files" class="sub-sub-link">Поиск по файлам</a>
+        <a href="#neural-network-usage" class="sub-link">Использование нейросети в VS Code</a>
+        <a href="#qwen-extension" class="sub-sub-link">Работа с Qwen</a>
+        <a href="#github-copilot" class="sub-sub-link">Работа с GitHub Copilot</a>
+        <a href="#agents-config" class="sub-link">Настройка агентов (AGENTS.md и др.)</a>
+        <a href="#practical-usage" class="sub-link">Практическое применение VS Code</a>
+        <a href="#reports-abstracts" class="sub-sub-link">Подготовка отчётов и рефератов</a>
+        <a href="#html-presentation" class="sub-sub-link">Создание презентации в Visual Studio Code с помощью HTML</a>
+        <a href="#information-analysis" class="sub-sub-link">Анализ информации</a>
+        <a href="#tables-data" class="sub-sub-link">Работа с таблицами и данными</a>
+        <a href="#exam-prep" class="sub-sub-link">Подготовка к экзаменам</a>
+        <a href="#possible-problems" class="sub-link">Возможные проблемы</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <section class="hero">
+        <h1>Работа через Visual Studio Code</h1>
+        <p>
+          До этого рассматривалась работа в Word и веб-сервисах, однако для
+          серьёзной учебной деятельности требуется единая среда, объединяющая
+          текстовый редактор, файловый менеджер, работу с кодом и нейросети.
+          Такой средой является <strong>Visual Studio Code (VS Code)</strong>.
+        </p>
+      </section>
+
+      <section class="section" id="vscode-intro">
+        <h2>Работа через Visual Studio Code</h2>
+
+        <p>
+          Visual Studio Code превосходит большинство альтернатив благодаря
+          сочетанию бесплатности, лёгкости и высокой расширяемости.
+        </p>
+
+        <p>
+          В отличие от тяжёлых IDE, таких как PyCharm или Eclipse, VS Code
+          запускается быстро и потребляет минимум системных ресурсов.
+          В отличие от обычных текстовых редакторов, таких как Блокнот или Word,
+          он поддерживает работу с папками, поиск по всем файлам, несколько курсоров,
+          регулярные выражения, встроенный терминал и Git.
+        </p>
+
+        <p>
+          В отличие от онлайн-сервисов, VS Code способен работать офлайн и
+          не требует постоянной передачи учебных материалов в облако.
+        </p>
+
+        <p>
+          Главным преимуществом является поддержка расширений, таких как
+          <strong>Qwen</strong>, <strong>GitHub Copilot</strong>,
+          <strong>Office Viewer</strong>, <strong>Jupyter</strong> и других.
+          Благодаря этому VS Code превращается в единую рабочую среду, где
+          нейросети могут не только отвечать на вопросы, но и взаимодействовать
+          с вашей файловой системой: создавать, редактировать и анализировать файлы.
+        </p>
+
+        <div class="note">
+          <strong>Вывод:</strong> VS Code особенно полезен для написания больших
+          учебных работ, анализа материалов, подготовки презентаций, таблиц и
+          систематизации файлов в одном месте.
+        </div>
+      </section>
+
+      <section class="section" id="install-vscode">
+        <h2>Установка Visual Studio Code</h2>
+
+        <div class="step">
+          <div class="step-number">Шаг 1</div>
+          <p><strong>Переход на официальный сайт</strong></p>
+          <p>
+            Откройте любой браузер (например, Chrome, Edge или Firefox),
+            введите запрос <em>«vs code»</em> и перейдите на официальный сайт
+            Visual Studio Code.
+          </p>
+          <p>
+            Либо воспользуйтесь официальной ссылкой:
+            <br><strong>https://code.visualstudio.com/</strong>
+          </p>
+          <div>
+            <img src="images/24.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 2</div>
+          <p><strong>Скачивание установочного файла</strong></p>
+          <p>
+            На главной странице нажмите кнопку <strong>Download</strong>.
+            Сайт автоматически предложит версию под вашу операционную систему
+            (Windows, macOS или Linux).
+          </p>
+          <div>
+            <img src="images/25.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+          </div>
+          <p>
+            После нажатия начнётся загрузка установочного файла.
+          </p>
+          <div>
+           <img src="images/26.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 3</div>
+          <p><strong>Запуск установщика</strong></p>
+          <p>
+            После завершения загрузки откройте скачанный файл или перейдите
+            в папку <strong>Загрузки (Downloads)</strong> и запустите установку вручную.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 4</div>
+          <p><strong>Принятие лицензионного соглашения</strong></p>
+          <p>
+            В открывшемся окне установщика:
+          </p>
+          <p>
+            – выберите пункт <strong>I accept the agreement</strong>;<br>
+            – нажимайте <strong>Next</strong>, пока не появится кнопка установки.
+          </p>
+          <div>
+            <img src="images/27.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 5</div>
+          <p><strong>Выбор папки установки</strong></p>
+          <p>
+            Установщик предложит папку для установки программы. Рекомендуется
+            оставить путь по умолчанию и нажать <strong>Next</strong>.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 6</div>
+          <p><strong>Выбор дополнительных параметров</strong></p>
+          <p>На этом этапе рекомендуется включить полезные опции:</p>
+          <p>
+            – <strong>add to PATH</strong> – позволяет запускать VS Code из командной строки;<br>
+            – <strong>create a desktop icon</strong> – создаёт значок на рабочем столе;<br>
+            – <strong>add "Open with Code"</strong> – добавляет пункт в контекстное меню.
+          </p>
+          <p>
+            Рекомендуется отметить все эти параметры, затем нажать <strong>Next</strong>.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 7</div>
+          <p><strong>Установка программы</strong></p>
+          <p>
+            Нажмите кнопку <strong>Install</strong> и дождитесь завершения процесса установки.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 8</div>
+          <p><strong>Завершение установки и запуск</strong></p>
+          <p>
+            После окончания установки нажмите <strong>Finish</strong>.
+            Если установлена соответствующая галочка, программа запустится автоматически.
+          </p>
+          <div>
+            <img src="images/28.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 9</div>
+          <p><strong>Первая проверка</strong></p>
+          <p>
+            После запуска убедитесь, что программа открылась корректно.
+            При необходимости можно установить расширения через вкладку
+            <strong>Extensions</strong>.
+          </p>
+          <div>
+            <img src="images/29.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="github-link">
+        <h2>Привязка VS Code к GitHub</h2>
+
+        <p>
+          <strong>Git</strong> — это система контроля версий, которая отслеживает
+          изменения в файлах. Она позволяет хранить историю проекта и при необходимости
+          возвращаться к более ранним версиям.
+        </p>
+
+        <p>
+          <strong>GitHub</strong> — это онлайн-сервис для хранения Git-репозиториев.
+          Он позволяет сохранять проекты в облаке, делиться ими и организовывать
+          совместную работу.
+        </p>
+
+        <p>
+          Важно понимать разницу: <strong>Git</strong> — это технология,
+          а <strong>GitHub</strong> — это веб-сервис, использующий эту технологию.
+        </p>
+
+        <p>
+          Для учебной деятельности это особенно полезно, так как позволяет:
+        </p>
+
+        <p>
+          – надёжно хранить историю учебных проектов;<br>
+          – обмениваться файлами с одногруппниками или преподавателем;<br>
+          – получать практический навык, востребованный в IT-среде.
+        </p>
+
+        <p>
+          Ниже рассматривается порядок регистрации на GitHub и привязки аккаунта к VS Code.
+        </p>
+
+        <h3 id="github-register">Регистрация на GitHub</h3>
+
+        <div class="step">
+          <div class="step-number">Шаг 1</div>
+          <p>
+            Откройте браузер и перейдите на официальный сайт:
+            <br><strong>https://github.com/</strong>
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 2</div>
+          <p>
+            Нажмите кнопку <strong>Sign up</strong> в правом верхнем углу.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 3</div>
+          <p>
+            Введите адрес электронной почты, придумайте пароль и имя пользователя
+            (<strong>username</strong>).
+          </p>
+          <div>
+            <img src="images/30.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 4</div>
+          <p>
+            GitHub отправит на вашу электронную почту код подтверждения.
+            Введите его в соответствующее поле на сайте.
+          </p>
+          <p>
+            Подтверждение электронной почты является обязательным шагом,
+            без которого невозможно полноценно использовать сервис.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 5</div>
+          <p>
+            После подтверждения почты вы попадёте в личный кабинет GitHub.
+            Регистрация завершена.
+          </p>
+        </div>
+
+        <h3 id="install-git">Установка Git на компьютер</h3>
+
+        <div class="step">
+          <div class="step-number">Шаг 1</div>
+          <p>
+            В некоторых случаях одной регистрации на GitHub недостаточно,
+            поэтому дополнительно требуется установить программу <strong>Git</strong>.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 2</div>
+          <p>
+            Скачайте установщик Git для вашей операционной системы с официального сайта:
+            <br><strong>https://git-scm.com/downloads</strong>
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 3</div>
+          <p>
+            Запустите скачанный файл и следуйте инструкциям установщика.
+            Настройки по умолчанию подходят для большинства пользователей.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 4</div>
+          <p>
+            После завершения установки рекомендуется перезапустить VS Code.
+          </p>
+        </div>
+
+        <h3 id="connect-github">Привязка GitHub к VS Code</h3>
+
+        <div class="step">
+          <div class="step-number">Шаг 1</div>
+          <p>
+            Откройте <strong>Visual Studio Code</strong>.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 2</div>
+          <p>
+            Посмотрите на левую боковую панель. В нижней части находится
+            иконка с изображением шестерёнки или аватара.
+            Это кнопка <strong>Accounts</strong> (Управление аккаунтами).
+          </p>
+          <p>
+            Нажмите на неё.
+          </p>
+<div>
+            <img src="images/31.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 3</div>
+          <p>
+            В появившемся меню выберите пункт
+            <strong>Sign in to GitHub...</strong>
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 4</div>
+          <p>
+            Браузер откроется автоматически и предложит авторизацию.
+            Нажмите кнопку <strong>Authorize Visual-Studio-Code</strong>.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 5</div>
+          <p>
+            После подтверждения откроется окно с предложением открыть ссылку
+            в приложении. Нажмите <strong>Open Link</strong>.
+          </p>
+          <p>
+            После этого VS Code автоматически активируется, а в нижнем левом углу
+            появится имя вашего GitHub-аккаунта.
+          </p>
+          <p><strong>Привязка завершена.</strong></p>
+        </div>
+
+        <div class="note">
+          <strong>Рекомендация:</strong> после привязки GitHub удобно сразу
+          использовать VS Code для сохранения учебных проектов, резервного копирования
+          и совместной работы над файлами.
+        </div>
+      </section>
+
+      <section class="section" id="install-extensions">
+        <h2>Установка расширений в Visual Studio Code</h2>
+
+        <p>
+          Для расширения функциональных возможностей Visual Studio Code необходимо установить дополнительные расширения (Extensions).
+        </p>
+
+        <div class="step">
+          <div class="step-number">Шаг 1</div>
+          <p>Запустите программу Visual Studio Code.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 2</div>
+          <p>
+            В левой части окна найдите панель инструментов и нажмите на значок <strong>Extensions</strong> (Расширения)
+            (иконка в виде четырёх квадратов).
+          </p>
+          <div>
+            <img src="images/32.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 3</div>
+          <p>
+            В открывшемся окне в строке поиска введите название нужного расширения.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 4</div>
+          <p>
+            В списке результатов выберите требуемое расширение.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 5</div>
+          <p>
+            Нажмите кнопку <strong>Install</strong> (Установить).
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 6</div>
+          <p>
+            Дождитесь завершения установки. После установки расширение активируется автоматически.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="recommended-extensions">
+        <h2>Рекомендуемые расширения</h2>
+
+        <p>
+          Для работы с файлами, документами и анализом данных рекомендуется
+          установить следующие расширения.
+        </p>
+
+        <p>
+          При необходимости можно установить дополнительные расширения
+          в зависимости от вашей сферы работы. Некоторые расширения требуют
+          дополнительной настройки после установки.
+        </p>
+
+        <div class="table-wrap">
+          <div class="table-caption">Таблица 4 – Рекомендуемые расширения</div>
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th style="width:60px;">№</th>
+                <th style="width:220px;">Название</th>
+                <th>Описание</th>
+                <th style="width:140px; text-align:center;">Фото</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td><strong>Office Viewer</strong></td><td>Просмотр файлов .docx, .xlsx, .pptx прямо в VS Code</td><td><img src="images/ext1.png" class="ext-img"></td></tr>
+              <tr><td>2</td><td><strong>Jupyter</strong></td><td>Анализ данных и интерактивные отчёты</td><td><img src="images/ext2.png" class="ext-img"></td></tr>
+              <tr><td>3</td><td><strong>Markdown All in One</strong></td><td>Работа с текстами и отчётами в Markdown</td><td><img src="images/ext3.png" class="ext-img"></td></tr>
+              <tr><td>4</td><td><strong>Excel Viewer</strong></td><td>Просмотр Excel-файлов внутри редактора</td><td><img src="images/ext4.png" class="ext-img"></td></tr>
+              <tr><td>5</td><td><strong>Qwen</strong></td><td>ИИ для генерации текстов и анализа информации</td><td><img src="images/ext5.png" class="ext-img"></td></tr>
+              <tr><td>6</td><td><strong>vscode-icons</strong></td><td>Иконки файлов для удобной навигации</td><td><img src="images/ext6.png" class="ext-img"></td></tr>
+              <tr><td>7</td><td><strong>File Utils</strong></td><td>Управление файлами и папками</td><td><img src="images/ext7.png" class="ext-img"></td></tr>
+              <tr><td>8</td><td><strong>Code Spell Checker</strong></td><td>Проверка орфографии</td><td><img src="images/ext8.png" class="ext-img"></td></tr>
+              <tr><td>9</td><td><strong>Bookmarks</strong></td><td>Быстрая навигация по файлам</td><td><img src="images/ext9.png" class="ext-img"></td></tr>
+              <tr><td>10</td><td><strong>Better Comments</strong></td><td>Цветовое выделение комментариев</td><td><img src="images/ext10.png" class="ext-img"></td></tr>
+              <tr><td>11</td><td><strong>PDF Viewer</strong></td><td>Просмотр PDF-файлов</td><td><img src="images/ext11.png" class="ext-img"></td></tr>
+              <tr><td>12</td><td><strong>Live Share</strong></td><td>Совместная работа в реальном времени</td><td><img src="images/ext12.png" class="ext-img"></td></tr>
+              <tr><td>13</td><td><strong>Russian Language Pack</strong></td><td>Русификация интерфейса</td><td><img src="images/ext13.png" class="ext-img"></td></tr>
+              <tr><td>14</td><td><strong>Book Reader</strong></td><td>Чтение электронных книг</td><td><img src="images/ext14.png" class="ext-img"></td></tr>
+              <tr><td>15</td><td><strong>GitHub Copilot Chat</strong></td><td>ИИ-помощник для работы с кодом</td><td><img src="images/ext16.png" class="ext-img"></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>После установки расширений рекомендуется:</strong></p>
+
+        <div class="step">
+          <div class="step-number">Рекомендация 1</div>
+          <p>Убедиться, что расширения отображаются во вкладке Extensions (Расширения).</p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Рекомендация 2</div>
+          <p>Перезапустить Visual Studio Code для корректной работы.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Рекомендация 3</div>
+          <p>При необходимости выполнить дополнительную настройку расширений.</p>
+        </div>
+      </section>
+<section class="section" id="create-project-folder">
+  <h2>Создание папки для работы с файлами проекта</h2>
+
+  <p>
+    Для удобной организации файлов рекомендуется создать отдельную папку проекта
+    перед началом работы в Visual Studio Code.
+  </p>
+
+  <div class="step">
+    <div class="step-number">Шаг 1</div>
+    <p>
+      Откройте проводник операционной системы (<strong>Проводник</strong> в Windows
+      или <strong>Finder</strong> в macOS).
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 2</div>
+    <p>
+      Перейдите в директорию, где планируется хранение проекта
+      (например, «Документы» или «Рабочий стол»).
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 3</div>
+    <p>
+      Нажмите правой кнопкой мыши в пустой области. Выберите пункт
+      <strong>«Создать» → «Папку»</strong>.
+    </p>
+    <div>
+      <img src="images/33.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 4</div>
+    <p>
+      Введите название папки. Рекомендуется использовать понятное имя, отражающее
+      содержание проекта (например, <code>Отчёт_по_практике</code>,
+      <code>Анализ_данных</code>, <code>Проект_1</code>).
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 5</div>
+    <p>
+      Запустите <strong>Visual Studio Code</strong>. В главном меню выберите:
+      <strong>File → Open Folder</strong> (Файл → Открыть папку). В открывшемся окне
+      найдите созданную папку.
+    </p>
+    <div>
+      <img src="images/34.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 6</div>
+    <p>
+      Выделите папку и нажмите кнопку <strong>«Выбрать папку»</strong>.
+      После выполнения действий папка отобразится в левой части окна
+      (<strong>Explorer</strong>). В неё можно добавлять файлы и создавать
+      структуру проекта.
+    </p>
+    <div>
+      <img src="images/35.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Рекомендации:</strong><br>
+    – храните все файлы проекта в одной папке;<br>
+    – создавайте подпапки (например: <em>Документы, Данные, Презентации</em>);<br>
+    – используйте понятные и единообразные названия файлов.
+  </div>
+</section>
+<section class="section" id="work-with-files">
+  <h2>Работа с файлами в Visual Studio Code</h2>
+
+  <p>
+    После создания папки проекта пользователь может приступить к работе с различными
+    учебными файлами. Visual Studio Code позволяет удобно организовать материалы,
+    открывать документы и быстро переходить между ними.
+  </p>
+
+  <!-- Подподраздел: Открытие файлов -->
+  <h3 id="open-files">Открытие файлов</h3>
+
+  <p>Для открытия файла необходимо:</p>
+  <ul style="margin-bottom: 20px; margin-left: 30px;">
+    <li>открыть ранее созданную папку проекта через меню: <strong>File → Open Folder</strong>;</li>
+    <li>в левой части окна (панель <strong>Explorer</strong>) выбрать нужный файл;</li>
+    <li>щёлкнуть по нему левой кнопкой мыши.</li>
+  </ul>
+
+  <div>
+    <div>
+     <img src="images/36.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <p>
+    В Visual Studio Code можно работать с различными типами файлов, например:
+  </p>
+  <ul style="margin-bottom: 20px; margin-left: 30px;">
+    <li>текстовые документы;</li>
+    <li>таблицы;</li>
+    <li>презентации;</li>
+    <li>PDF-файлы;</li>
+    <li>заметки и черновики.</li>
+  </ul>
+
+  <!-- Подподраздел: Организация учебных материалов -->
+  <h3 id="organize-materials">Организация учебных материалов</h3>
+
+  <p>
+    Для удобства рекомендуется распределять файлы по тематическим папкам, например:
+  </p>
+  <ul style="margin-bottom: 20px; margin-left: 30px;">
+    <li><strong>документы</strong> – отчёты, рефераты, текстовые материалы;</li>
+    <li><strong>презентации</strong> – материалы для выступлений;</li>
+    <li><strong>данные</strong> – таблицы, результаты опросов, числовые данные;</li>
+    <li><strong>изображения</strong> – схемы, рисунки, иллюстрации;</li>
+    <li><strong>черновики</strong> – рабочие записи и промежуточные версии.</li>
+  </ul>
+  <p>
+    Такая структура позволяет быстрее находить нужные материалы и хранить их в одном месте.
+  </p>
+
+  <!-- Подподраздел: Работа с несколькими файлами -->
+  <h3 id="multiple-files">Работа с несколькими файлами</h3>
+
+  <p>
+    При открытии нескольких файлов они отображаются во вкладках в верхней части окна программы.
+    Пользователь может быстро переключаться между ними, не закрывая текущую работу.
+    По умолчанию в Visual Studio Code файл может открываться в режиме предварительного просмотра.
+    В этом режиме при открытии следующего файла предыдущий автоматически заменяется, и отдельная
+    вкладка не создаётся.
+  </p>
+
+  <p>Чтобы открыть несколько файлов одновременно, необходимо:</p>
+  <ol style="margin-bottom: 20px; margin-left: 30px;">
+    <li>В левой панели <strong>Explorer</strong> выбрать нужный файл.</li>
+    <li>
+      Чтобы файл открылся как отдельная вкладка, необходимо: дважды щёлкнуть по файлу левой
+      кнопкой мыши или открыть файл и затем нажать на него повторно.
+    </li>
+    <li>После этого вкладка файла закрепится в верхней части окна.</li>
+    <li>Аналогичным образом можно открыть и остальные файлы.</li>
+  </ol>
+
+  <div>
+    <div>
+      <img src="images/37.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <!-- Подподраздел: Поиск по файлам -->
+  <h3 id="search-in-files">Поиск по файлам</h3>
+
+  <p>Для быстрого поиска информации можно использовать встроенную функцию поиска. Для этого необходимо:</p>
+  <ol style="margin-bottom: 20px; margin-left: 30px;">
+    <li>Нажать сочетание клавиш <strong>Ctrl + F</strong>.</li>
+    <li>Ввести нужное слово или фразу.</li>
+    <li>Просмотреть найденные совпадения в документе.</li>
+  </ol>
+
+  <div>
+    <div>
+      <img src="images/38.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+</section>
+<section class="section" id="neural-network-usage">
+  <h2>Использование нейросети в Visual Studio Code</h2>
+
+  <p>
+    Современные расширения Visual Studio Code позволяют использовать нейросетевые
+    инструменты для решения учебных задач.
+  </p>
+
+  <!-- Подподраздел: Работа с расширением Qwen -->
+  <h3 id="qwen-extension">Работа с расширением Qwen</h3>
+
+  <p>
+    После установки соответствующего расширения (см. п. <strong>Установка расширений
+    в Visual Studio Code</strong>) пользователь может открыть встроенное окно чата
+    или панели помощи.
+  </p>
+
+  <p>Для начала работы необходимо:</p>
+
+  <div class="step">
+    <div class="step-number">Шаг 1</div>
+    <p>
+      Открыть установленное AI-расширение в нижней части боковой панели
+      Visual Studio Code.
+    </p>
+    <div>
+      <img src="images/39.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 2</div>
+    <p>Ввести запрос в текстовое поле.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 3</div>
+    <p>Дождаться ответа нейросети.</p>
+    <div>
+<img src="images/40.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+    </div>
+  </div>
+
+  <!-- Подподраздел: Работа с GitHub Copilot -->
+  <h3 id="github-copilot">Работа с GitHub Copilot</h3>
+
+  <p>
+    В отличие от рекомендуемой нейросети <strong>Qwen</strong>, которая в большей
+    степени используется как инструмент для получения текстовых ответов,
+    формулирования идей, составления материалов и генерации содержимого по запросу,
+    <strong>GitHub Copilot</strong> более тесно интегрирован в среду Visual Studio Code
+    и лучше подходит для практической работы непосредственно с файлами проекта.
+  </p>
+
+  <div class="note">
+    <strong>Важно:</strong> если задача студента связана с тем, чтобы прочитать материалы
+    из рабочей папки, создать новый файл, собрать итоговый документ, обновить существующий
+    файл или структурировать содержимое проекта, предпочтительнее использовать
+    <strong>GitHub Copilot</strong>, поскольку он лучше адаптирован для работы
+    непосредственно в файловой среде Visual Studio Code.
+  </div>
+
+  <p>
+    У GitHub Copilot есть ограничения по запросам: <strong>2000 автодополнений кода
+    в месяц</strong> и <strong>2000 автодополнений кода в месяц</strong>
+    (каждый вопрос в чате = 1 premium запрос).
+  </p>
+
+  <p>
+    После установки соответствующего расширения (см. п. <strong>Установка расширений
+    в Visual Studio Code</strong>) пользователь может открыть встроенное окно чата
+    или панели помощи. Для начала работы необходимо:
+  </p>
+
+  <div class="step">
+    <div class="step-number">Шаг 1</div>
+    <p>
+      Открыть установленное AI-расширение в верхней части правой боковой панели
+      Visual Studio Code. <br>
+      <em>Или можно открыть через:</em> <strong>Ctrl + Shift + P</strong>. Далее нужно
+      ввести: <strong>GitHub Copilot: Open Chat</strong> или <strong>Copilot Chat</strong>.
+      После этого откроется окно встроенного ИИ-помощника.
+    </p>
+    <div>
+     <img src="images/41.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 2</div>
+    <p>Ввести запрос в текстовое поле.</p>
+<div>
+      <img src="images/42.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 3</div>
+    <p>Дождаться ответа нейросети.</p>
+    
+  </div>
+</section>
+<section class="section" id="agents-config">
+  <h2>Настройка агентов: системные файлы AGENTS.md, QWEN.md, Project.md и другие</h2>
+
+  <p>
+    <strong>Агент</strong> – это ИИ-помощник, встроенный в вашу среду разработки (VS Code).
+    Он может читать и создавать файлы, отвечать на вопросы, писать код, анализировать документы.
+    Примеры агентов: Claude Code (от Anthropic), Qwen Code, GitHub Copilot, Cursor.
+    В отличие от простого чата в браузере, агент имеет доступ к файловой системе вашего проекта
+    и может выполнять действия (создать файл, изменить код, запустить команду).
+  </p>
+
+  <p>
+    По умолчанию агент не знает ваших предпочтений: на каком языке отвечать, какой стиль кода
+    использовать, как организован проект, какие библиотеки запрещены. Каждый раз объяснять это
+    вручную – утомительно.
+  </p>
+
+  <p>
+    <strong>Файлы конфигурации</strong> позволяют задать правила один раз, и агент будет им следовать
+    в каждой сессии, экономя ваше время и обеспечивая единообразие. Обычно используют следующие
+    расширения:
+  </p>
+  <ul style="margin-bottom: 20px; margin-left: 30px;">
+    <li>
+      <strong>.txt</strong> – обычный текстовый файл без форматирования. Только буквы, цифры и знаки.
+      Подходит для заметок, черновиков, простых записей.
+    </li>
+    <li>
+      <strong>.md</strong> – файл в формате Markdown. Позволяет делать заголовки, списки,
+      жирный/курсивный текст, таблицы, ссылки и вставлять код. При этом остаётся читаемым и в обычном
+      блокноте. Удобен для конспектов, отчётов, инструкций и документации.
+    </li>
+  </ul>
+
+  <p>
+    В экосистеме VS Code сложилось несколько стандартов. Самые важные для студента представлены
+    в таблице 5.
+  </p>
+
+  <!-- Таблица 5 – Типичные файлы агентов -->
+  <div class="table-wrap">
+    <div class="table-caption">Таблица 5 – Типичные файлы агентов</div>
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>Файл</th>
+          <th>Для кого?</th>
+          <th>Где размещать?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>AGENTS.md</strong></td>
+          <td>Универсальный – понимают Qwen Code, Claude Code, Copilot (частично), Cursor</td>
+          <td>В корне проекта или в папке <code>.qwen/</code></td>
+        </tr>
+        <tr>
+          <td><strong>CLAUDE.md</strong></td>
+          <td>Claude Code (агент от Anthropic)</td>
+          <td>Корень проекта или глобально <code>~/.claude/</code></td>
+        </tr>
+        <tr>
+          <td><strong>copilot-instructions.md</strong></td>
+          <td>GitHub Copilot</td>
+          <td>Папка <code>.github/</code> в корне проекта</td>
+        </tr>
+        <tr>
+          <td><strong>.cursorrules</strong></td>
+          <td>Cursor (редактор на базе VS Code)</td>
+          <td>Корень проекта</td>
+        </tr>
+        <tr>
+          <td><strong>Project.md</strong></td>
+          <td>Произвольный – часто используется как описание проекта для человека и для ИИ</td>
+          <td>Корень проекта</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <strong>Важно:</strong> наиболее универсальным форматом сейчас является <strong>AGENTS.md</strong>.
+    Многие современные агенты (включая Claude Code и Qwen Code) читают этот файл, если он находится
+    в корне или в специальной папке.
+  </div>
+
+  <p>Далее рассмотрим, как создать и настроить файл для агента.</p>
+
+  <div class="step">
+    <div class="step-number">Шаг 1</div>
+    <p>
+      <strong>Определитесь с агентом</strong>, которым вы пользуетесь. Для большинства учебных проектов
+      достаточно создать <strong>AGENTS.md</strong> в корневой папке – он будет работать и с Qwen,
+      и с Copilot (при поддержке), и с Cursor.
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 2</div>
+    <p><strong>Создайте файл в нужном месте.</strong> Откройте VS Code, в вашей папке проекта
+      (например, <code>Курсовая_работа</code>). Создайте новый файл:</p>
+    <ul style="margin-top: 12px; margin-left: 30px;">
+      <li>для <strong>AGENTS.md</strong>: просто создайте файл <code>AGENTS.md</code> в корне;</li>
+      <li>для <strong>copilot-instructions.md</strong>: сначала создайте папку <code>.github</code>,
+        а внутри – файл <code>copilot-instructions.md</code>;</li>
+      <li>для <strong>CLAUDE.md</strong>: создайте файл <code>CLAUDE.md</code> в корне.</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 3</div>
+    <p>
+      <strong>Напишите правила (содержимое файла).</strong> Правила пишутся на естественном языке
+      (русском или английском) в формате Markdown. Чем чётче – тем лучше.
+    </p>
+    <p>Базовый шаблон для <strong>AGENTS.md</strong> (учебный проект):</p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 20px; margin: 16px 0; font-family: monospace; font-size: 15px; overflow-x: auto;">
+      <pre style="margin: 0; color: #e2e8f0;">
+# Инструкции для ИИ-агента
+
+## 1. Стиль общения
+- Отвечай на русском языке.
+- Используй академический (научно-учебный) стиль. Избегай разговорных выражений.
+- Если информации недостаточно – скажи об этом прямо, не придумывай.
+
+## 2. Формат ответов
+- По возможности структурируй ответ: списки, заголовки, таблицы.
+- Если генерируешь код (Python, HTML, JavaScript) – добавляй комментарии на русском.
+- Код должен быть полностью самодостаточным (все стили и скрипты внутри одного файла, если не указано иное).
+
+## 3. Работа с файлами
+- При создании нового файла всегда указывай расширение (.md, .html, .py и т.д.).
+- Не изменяй файлы без явного разрешения, если только задача не требует правки.
+- Сохраняй созданные файлы в текущую папку, если не указан другой путь.
+
+## 4. Структура проекта
+- `/data` – исходные данные (CSV, Excel).
+- `/docs` – методички, статьи, PDF.
+- `/src` – скрипты и код.
+- `/output` – итоговые отчёты, презентации, результаты.
+
+## 5. Ограничения
+- Не предлагай решения, требующие платных подписок (если это не оговорено).
+- Не удаляй файлы из папок `/data` и `/docs`.
+- При сомнениях запрашивай уточнение.</pre>
+    </div>
+
+    <p>Пример для <strong>copilot-instructions.md</strong> (более короткий, так как Copilot специфичен для кода):</p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 20px; margin: 16px 0; font-family: monospace; font-size: 15px; overflow-x: auto;">
+      <pre style="margin: 0; color: #e2e8f0;">
+# Copilot Instructions
+
+- Ответы давай на русском языке.
+- Для Python используй стиль PEP 8.
+- Для HTML/CSS/JS создавай отдельные файлы или встроенный код по запросу.
+- При генерации презентаций обязательно добавляй кнопки навигации и поддержку стрелок.</pre>
+    </div>
+
+    <p>Пример для <strong>CLAUDE.md</strong> (для Claude Code):</p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 20px; margin: 16px 0; font-family: monospace; font-size: 15px; overflow-x: auto;">
+      <pre style="margin: 0; color: #e2e8f0;">
+# Claude Code Project Instructions
+
+## Project context
+This is a student coursework project on "Neural Networks in Education".
+
+## Rules
+- Always respond in Russian.
+- Use academic style.
+- Never hallucinate facts. If you don't know, say so.
+- Prefer creating new files over displaying code in chat.
+- For HTML presentations, use light background, large headings, and arrow key navigation.
+
+## Project structure
+See `README.md` for details.</pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 4</div>
+    <p><strong>Проверьте, что агент видит файл</strong></p>
+    <ul style="margin-top: 12px; margin-left: 30px;">
+      <li>для <strong>Qwen Code</strong>: просто напишите в чате «Какие правила ты видишь в этом проекте?» – он должен прочитать AGENTS.md;</li>
+      <li>для <strong>Copilot</strong>: инструкции из copilot-instructions.md применяются автоматически (проверить можно, задав вопрос, требующий стилевого решения);</li>
+      <li>для <strong>Claude Code</strong>: запустите <code>claude</code> в терминале в папке проекта – он автоматически загрузит CLAUDE.md.</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 5</div>
+    <p><strong>Используйте в работе.</strong> После настройки вы можете давать агенту короткие запросы,
+      и он будет следовать прописанным правилам. Например:</p>
+    <ul style="margin-top: 12px; margin-left: 30px;">
+      <li><em>«Создай HTML-презентацию на тему „История ДВФУ“»</em> – агент автоматически сделает файл .html
+        с кнопками, русским языком и академическим стилем.</li>
+      <li><em>«Проанализируй файлы из папки /docs и напиши конспект в output/conspekt.md»</em> – агент будет
+        знать, куда сохранять результат.</li>
+    </ul>
+  </div>
+
+  <h3 id="good-instructions">Как писать хорошие инструкции?</h3>
+
+  <p>
+    Эффективность AGENTS.md сильно зависит от качества написанных инструкций. Вот ключевые правила:
+  </p>
+
+  <div class="step">
+    <div class="step-number">Правило 1</div>
+    <p><strong>Пишите кратко и по делу:</strong> инструкции должны быть короткими, чёткими и релевантными
+      для всех задач в проекте. Если файл будет перегружен, агент может просто его проигнорировать.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Правило 2</div>
+    <p><strong>Отдавайте предпочтение "что делать", а не "как не надо":</strong> вместо списка запретов
+      лучше писать чёткие позитивные инструкции. Агенты лучше следуют прямым указаниям, а не пытаются
+      обойти ограничения.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Правило 3</div>
+    <p><strong>Что должно быть в файле:</strong> </p>
+    <ul style="margin-top: 12px; margin-left: 30px;">
+      <li><strong>общая информация:</strong> краткое описание проекта и его архитектуры;</li>
+      <li><strong>технологический стек:</strong> основные языки, фреймворки, библиотеки;</li>
+      <li><strong>структура проекта:</strong> карта директорий с пояснениями, что где лежит;</li>
+      <li><strong>код-стайл и соглашения:</strong> требования к форматированию, именованию переменных,
+        написанию комментариев;</li>
+      <li><strong>критичные запреты</strong>, например, «никогда не удаляй файлы из папки /data»;</li>
+      <li><strong>команды для сборки и тестов:</strong> как запустить проект, проверить код и убедиться,
+        что изменения ничего не сломали.</li>
+    </ul>
+  </div>
+</section>
+<section class="section" id="practical-usage">
+  <h2>Практическое применение Visual Studio Code</h2>
+
+  <p>
+    Visual Studio Code может использоваться студентами не только для хранения и просмотра файлов,
+    но и как удобный инструмент для организации учебной деятельности, подготовки материалов
+    и работы с нейросетевыми технологиями. Visual Studio Code превосходит другие сервисы при подготовке отчётов и      рефератов тем, что объединяет в одной среде работу с текстами, файлами и источниками, позволяет удобно         структурировать большие проекты, быстро искать информацию по всем документам, использовать расширения (для PDF, таблиц, Markdown и ИИ), сохранять историю изменений через Git и при этом работает быстро даже на слабых устройствах без необходимости постоянного подключения к интернету.
+  </p>
+
+  <h3 id="reports-abstracts">Подготовка отчётов и рефератов</h3>
+
+  <p>
+    Visual Studio Code можно использовать для написания и структурирования учебных текстов,
+    таких как отчёты, рефераты, эссе, курсовые и аналитические материалы.
+  </p>
+
+  <div class="step">
+    <div class="step-number">Шаг 1</div>
+    <p>Откройте папку проекта в Visual Studio Code.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 2</div>
+    <p>
+      Создайте новый файл для чернового текста. После названия обязательно нужно указать
+      расширение файла.
+    </p>
+    <div>
+      <img src="images/43.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 3</div>
+    <p>
+      <strong>Открытие файла для ввода текста.</strong> После создания файл автоматически откроется
+      в центральной части окна Visual Studio Code. Именно в этом окне выполняется набор текста.
+      Следует учитывать, что Visual Studio Code отображает текст в виде строк, как в редакторе.
+      Несмотря на внешний вид, файл можно использовать как обычный черновик текста.
+    </p>
+    <div>
+      <img src="images/44.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 4</div>
+    <p>
+      Подготовьте структуру будущей работы. Используйте нейросеть для составления плана,
+      подготовки черновика и редактирования текста.
+    </p>
+    <div>
+      <img src="images/45.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 5</div>
+    <p>
+      <strong>Написание основной части по разделам.</strong> Нейросеть может сгенерировать реферат
+      одним запросом, однако такой способ не рекомендуется как основной, поскольку итоговый текст
+      часто требует существенной проверки, редактирования, уточнения структуры и адаптации под
+      требования учебного задания. Наиболее эффективным является поэтапный способ подготовки работы.
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 6</div>
+    <p>
+      <strong>Сохранение файла.</strong> Для этого можно нажать сочетание клавиш
+      <strong>Ctrl + S</strong> или выбрать в верхнем меню <strong>File → Save</strong>
+      (Файл → Сохранить). Рекомендуется сохранять изменения после каждого важного фрагмента текста,
+      чтобы избежать потери информации.
+    </p>
+    <div>
+      <img src="images/46.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 7</div>
+    <p><strong>Открытие файла через Word.</strong> Иногда можно не копировать текст вручную,
+      а открыть файл напрямую в Word:</p>
+    <ul style="margin-top: 12px; margin-left: 30px;">
+      <li>открыть Microsoft Word;</li>
+      <li>выбрать: Файл → Открыть;</li>
+      <li>найти ранее сохранённый файл;</li>
+      <li>открыть его. После этого Word может загрузить текст из файла.</li>
+    </ul>
+    <p>Но важно:</p>
+    <ul style="margin-top: 12px; margin-left: 30px;">
+      <li>структура иногда отображается неидеально;</li>
+      <li>переносы строк могут сбиваться;</li>
+      <li>форматирование всё равно придётся настраивать вручную.</li>
+    </ul>
+    <p>Поэтому основным рекомендуемым способом остаётся копирование текста.</p>
+  </div>
+
+  <h4>Примеры запросов к нейросети</h4>
+
+  <ul style="margin-bottom: 20px; margin-left: 30px;">
+    <li><em>«Составь подробный план реферата на тему [название темы]. Работа должна быть выполнена в учебно-научном стиле для студента вуза. Включи введение, 2–3 основных раздела, заключение и примерные подпункты. Структура должна быть логичной, понятной и подходящей для дальнейшего написания полного текста»</em>;</li>
+    <li><em>«Проверь структуру данного реферата и скажи, всё ли изложено логично и последовательно»</em>;</li>
+    <li><em>«Сделай текст более связным и плавным между разделами»</em>;</li>
+    <li><em>«Проверь, соответствует ли текст учебно-научному стилю»</em>;</li>
+    <li><em>«Напиши введение к реферату на тему [название темы]. Объём – 1–2 абзаца. Текст должен быть написан в официально-научном стиле, без сложных терминов, но с логичным обоснованием актуальности темы»</em>;</li>
+    <li><em>«Переформулируй следующий текст в более официальный и академический стиль, сохранив смысл и структуру. Текст должен подойти для студенческой учебной работы»</em>;</li>
+    <li><em>«Сформулируй заключение по теме [название темы]. В выводе кратко подведи итоги, выдели значимость темы и оформи текст в научно-учебном стиле»</em>.</li>
+  </ul>
+
+  <div class="note">
+    <strong>Важно:</strong> если пользователь создал, например, PDF, Word-документ, то такие файлы
+    часто открываются только для просмотра, а не для редактирования. То есть файл открывается,
+    но печатать в него нельзя.
+  </div>
+</section>
+<section class="section" id="html-presentation">
+  <h2>Создание презентации в Visual Studio Code с помощью HTML</h2>
+
+  <p>
+    В Visual Studio Code студент может подготовить презентацию не только в виде текстового плана,
+    но и в виде <strong>HTML-презентации</strong>, то есть набора слайдов, открываемых в браузере.
+    Создание презентации в Visual Studio Code с помощью HTML аналогично разработке веб-страницы:
+    каждый слайд оформляется как отдельный блок, структура и содержание задаются с помощью HTML,
+    внешний вид настраивается через CSS (цвета, шрифты, анимации). Такой подход позволяет создавать
+    гибкие, интерактивные презентации с полной настройкой дизайна и логики отображения, в отличие
+    от классических инструментов вроде Microsoft PowerPoint.
+  </p>
+
+  <div class="step">
+    <div class="step-number">Шаг 1</div>
+    <p><strong>Создание файла для презентации.</strong> После открытия рабочей папки в Visual Studio Code необходимо создать новый файл, в котором будет размещён код будущей презентации. Для этого необходимо:</p>
+    <ul style="margin-left: 30px;">
+      <li>в левой панели Explorer нажать кнопку «Новый файл»;</li>
+      <li>ввести название файла, например: <code>presentation.html</code>;</li>
+      <li>нажать Enter.</li>
+    </ul>
+    <p>Именно в этот файл в дальнейшем будет вставляться HTML-код презентации, сгенерированный с помощью нейросети или доработанный вручную.</p>
+    <div>
+      <img src="images/47.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 2</div>
+    <p><strong>Подготовка содержания презентации.</strong> Перед генерацией HTML-кода рекомендуется сначала продумать содержание будущей презентации. На этом этапе желательно определить:</p>
+    <ul style="margin-left: 30px;">
+      <li>тему презентации;</li>
+      <li>предполагаемое количество слайдов;</li>
+      <li>структуру выступления;</li>
+      <li>ключевые тезисы;</li>
+      <li>основные выводы.</li>
+    </ul>
+    <p>Это необходимо для того, чтобы нейросеть могла сгенерировать более логичную и качественную презентацию.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 3</div>
+    <p><strong>Использование нейросети для создания структуры презентации.</strong> Если студенту сложно самостоятельно составить структуру, можно сначала обратиться к нейросети с запросом на создание плана слайдов.</p>
+    <p><strong>Пример промта:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Составь структуру учебной презентации на [количество слайдов] слайдов по теме [название темы] для студента вуза. Для каждого слайда укажи его название и краткое содержание. Структура должна быть логичной, академичной, понятной и подходить для устного выступления.»
+    </div>
+    <p>После получения ответа студент может использовать предложенную структуру как основу будущей презентации.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 4</div>
+    <p><strong>Подготовка краткого содержания слайдов.</strong> После того как структура определена, нейросеть можно использовать для подготовки краткого содержания каждого слайда.</p>
+    <p><strong>Пример промта:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Подготовь краткий текст для учебной презентации на тему [название темы]. Для каждого слайда сформулируй заголовок и [количество тезисов] кратких тезисов. Текст должен быть академичным, понятным, логичным и подходить для студенческого выступления.»
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 5</div>
+    <p><strong>Генерация полного HTML-кода презентации.</strong> После подготовки структуры и содержания можно перейти к созданию самой HTML-презентации. Для этого необходимо попросить нейросеть не просто составить текст, а сгенерировать полный HTML-код презентации.</p>
+    <p><strong>Пример промта:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Создай HTML-презентацию на тему [название темы] для студенческого выступления в вузе. Презентация должна содержать [количество слайдов] слайдов и быть выполнена в современном, аккуратном и визуально привлекательном стиле. Используй светлый фон, крупные заголовки, карточки, списки, удобочитаемый текст и логичное расположение элементов. Добавь кнопки переключения между слайдами "Назад" и "Вперёд", а также поддержку переключения стрелками клавиатуры. Подготовь полный HTML-код со встроенными CSS-стилями и JavaScript.»
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 6</div>
+    <p><strong>Сохранение сгенерированного кода.</strong> Попросите нейросеть самостоятельно создать файл в вашей папке и записать туда сгенерированный код. После этого HTML-презентация уже будет сохранена как рабочий файл проекта.</p>
+    <div>
+      <img src="images/48.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 7</div>
+    <p><strong>Открытие презентации в браузере.</strong> После сохранения HTML-файла презентацию необходимо открыть в браузере. Для этого можно:</p>
+    <ul style="margin-left: 30px;">
+      <li>найти файл <code>presentation.html</code> в папке проекта;</li>
+      <li>дважды щёлкнуть по нему мышью;</li>
+      <li>либо открыть его через браузер вручную.</li>
+    </ul>
+    <p>После этого презентация отобразится как полноценная веб-страница.</p>
+    <div>
+      <img src="images/49.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+
+  </div>
+
+  <div class="step">
+    <div class="step-number">Как понять, что код вставлен правильно?</div>
+    <p>Если код вставлен корректно, внутри файла <code>presentation.html</code> должны присутствовать следующие основные элементы:</p>
+    <ul style="margin-left: 30px;">
+      <li>структура HTML-документа (<code>&lt;!DOCTYPE html&gt;</code>, <code>&lt;html&gt;</code>, <code>&lt;head&gt;</code>, <code>&lt;body&gt;</code>);</li>
+      <li>блоки оформления (<code>&lt;style&gt;</code>);</li>
+      <li>блоки с содержанием слайдов;</li>
+      <li>элементы навигации;</li>
+      <li>скрипт переключения слайдов (<code>&lt;script&gt;</code>).</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Как сделать презентацию визуально красивой?</div>
+    <p>После получения первого варианта HTML-презентации рекомендуется улучшить её оформление. Часто нейросеть создаёт рабочую, но достаточно простую версию. Поэтому полезно дополнительно запросить улучшение дизайна.</p>
+    <p><strong>Пример подробного промта:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Улучшай оформление данной HTML-презентации. Сделай её более современной, красивой и удобной для учебного выступления. Используй крупные заголовки, мягкие тени, карточки, аккуратные отступы, современную типографику, приятную цветовую гамму и плавные переходы между слайдами. Сохрани структуру презентации, но сделай её визуально более профессиональной и привлекательной.»
+    </div>
+    <div>
+      <img src="images/50.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+
+  </div>
+
+  <div class="step">
+    <div class="step-number">Как сделать презентацию более академичной?</div>
+    <p>Если презентация предназначена для защиты реферата, проекта или учебного доклада, её оформление должно быть не только красивым, но и уместным для академической среды. Для этого можно использовать отдельный запрос.</p>
+    <p><strong>Пример подробного промта:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Переделай HTML-презентацию в более академичном стиле. Сделай дизайн аккуратным, строгим, современным и подходящим для выступления студента в вузе. Используй спокойные цвета, читабельные шрифты, логичное расположение текста, чистые блоки и минималистичное оформление. Не перегружай слайды лишними декоративными элементами.»
+    </div>
+    <div>
+      <img src="images/51.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+
+  </div>
+
+  <div class="step">
+    <div class="step-number">Как сократить или улучшить текст на слайдах?</div>
+    <p>После генерации презентации студент может заметить, что некоторые слайды перегружены текстом. В этом случае нейросеть можно использовать для сокращения и упрощения содержания.</p>
+    <p><strong>Примеры полезных промтов:</strong></p>
+    <ul style="margin-left: 30px;">
+      <li><em>«Сократи текст данной презентации так, чтобы каждый слайд содержал только ключевые мысли.»</em></li>
+      <li><em>«Сделай текст на слайдах более кратким и удобным для восприятия.»</em></li>
+      <li><em>«Преобразуй длинные абзацы в короткие тезисы для слайдов.»</em></li>
+      <li><em>«Сделай текст более понятным и логичным для устного выступления.»</em></li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Как вставить изображение в HTML-презентацию?</div>
+    <p>При создании HTML-презентации в Visual Studio Code нейросеть может не только сгенерировать структуру и оформление слайдов, но и вставить изображения в код презентации. Однако для этого необходимо правильно указать путь к файлу изображения, чтобы нейросеть смогла встроить его в HTML-код.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг подготовки</div>
+    <p>Перед тем как просить нейросеть вставить изображение в презентацию, необходимо:</p>
+    <ul style="margin-left: 30px;">
+      <li>создать папку <code>images</code> (или другое название) внутри папки проекта;</li>
+      <li>поместить в неё нужные изображения;</li>
+      <li>убедиться, что файл имеет понятное имя;</li>
+      <li>желательно использовать латинские буквы и цифры в названии файла (например, <code>ai.jpg</code>, <code>education_slide.png</code>).</li>
+    </ul>
+    <p>Чем проще название файла, тем легче его использовать в коде и в запросах к нейросети.</p>
+    <div>
+      <img src="images/52.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+
+    <div>
+      <img src="images/53.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Примеры промтов для вставки изображения</div>
+    <ul style="margin-left: 30px;">
+      <li><em>«Добавь в HTML-презентацию изображение с путём [вставьте путь файла] на слайд [название слайда]. Размести изображение под текстом слайда, сделай его аккуратным, адаптивным, со скруглёнными углами и современным оформлением.»</em></li>
+      <li><em>«Вставь в HTML-код моей презентации изображение [вставьте путь файла] на слайд [название слайда]. Размести изображение под списком тезисов, сделай его шириной около 500 пикселей, добавь скруглённые углы, отступ сверху и мягкую тень. Сохрани общий современный стиль презентации.»</em></li>
+      <li><em>«Добавь в HTML-презентацию изображение [вставьте путь файла] на слайд [название слайда]. Размести текст слева, а изображение справа. Сделай слайд современным и аккуратным: используй карточки, отступы, скругления, удобочитаемый текст и адаптивное расположение элементов.»</em></li>
+      <li><em>«Добавь в HTML-презентацию два изображения: [вставьте путь файла] и [вставьте путь файла]. Первое изображение вставь на слайд [название слайда], второе – на слайд [название слайда]. Сделай оба изображения аккуратными, адаптивными, одинаково оформленными и визуально согласованными с общим стилем презентации.»</em></li>
+    </ul>
+    <div>
+      <img src="images/54.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Рекомендация:</strong> После каждого изменения сохраняйте файл и проверяйте презентацию в браузере, чтобы убедиться, что все элементы отображаются корректно.
+  </div>
+</section>
+<section class="section" id="information-analysis">
+  <h2>Анализ информации</h2>
+
+  <p>
+    Под анализом информации в данном случае понимается работа с текстами, статьями, PDF-документами,
+    таблицами, заметками, учебными материалами, интернет-источниками, результатами наблюдений,
+    исследованиями и иными файлами, необходимыми для выполнения учебной работы.
+  </p>
+
+  <p>
+    Анализ информации в Visual Studio Code осуществляется за счёт работы с различными типами данных
+    и инструментов в одной среде: пользователь может открывать текстовые документы, таблицы, PDF-файлы,
+    выполнять поиск по всем материалам проекта, использовать расширения (например, Jupyter для анализа
+    данных или ИИ-ассистентов для обработки текста), а также структурировать и сопоставлять информацию
+    из разных источников. Такой подход позволяет не только просматривать данные, но и выявлять
+    закономерности, сравнивать материалы и формировать обоснованные выводы в рамках учебной работы.
+  </p>
+
+  <div class="step">
+    <div class="step-number">Шаг 1</div>
+    <p><strong>Создание рабочей папки для анализа информации.</strong> Перед началом анализа рекомендуется создать отдельную папку проекта, в которой будут храниться все материалы. Для этого необходимо в левой панели Explorer (Проводник) нажать кнопку «Новая папка» и ввести название (например, <code>Анализ_информации</code>).</p>
+   <div>
+      <img src="images/55.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 2</div>
+    <p><strong>Создание структуры файлов для анализа.</strong> Чтобы работа была организованной, рекомендуется заранее создать несколько файлов. В папке <code>Анализ_информации</code> можно создать, например, такие файлы (подробнее про используемые форматы смотреть в п. Настройка агентов):</p>
+    <ul style="margin-left: 30px;">
+      <li><code>материалы_для_анализа.md</code>;</li>
+      <li><code>ключевые_идеи.md</code>;</li>
+      <li><code>сравнительный_анализ.md</code>;</li>
+      <li><code>таблица_сравнения.md</code>;</li>
+      <li><code>выводы.md</code>;</li>
+      <li><code>итоговый_анализ.md</code>.</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 3</div>
+    <p><strong>Точное указание файлов в запросе.</strong> При работе с нейросетью в Visual Studio Code важно уметь точно указывать, с какими материалами нужно работать. Если в папке проекта есть несколько файлов, то в запросе рекомендуется прямо указывать их названия.</p>
+    <p><strong>Пример правильной формулировки:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Проанализируй материалы [название файла.расширение] и [название файла.расширение], выдели ключевые идеи, основные различия и подготовь краткие выводы.»
+    </div>
+    <p><strong>Или:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Сравни данные из файла [название файла.расширение] с основными тезисами из файла [название файла.расширение] и сформулируй аналитические наблюдения.»
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 4</div>
+    <p><strong>Если нейросеть не видит содержимое файла.</strong> Если нейросеть не может автоматически «понять» содержимое нужного файла, студент может:</p>
+    <ul style="margin-left: 30px;">
+      <li>открыть документ;</li>
+      <li>скопировать нужный фрагмент;</li>
+      <li>вставить его в окно чата;</li>
+      <li>дать конкретное задание.</li>
+    </ul>
+    <p><strong>Пример подробного промта:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Ниже приведён фрагмент текста из файла [название файла.расширение]. Проанализируй его, выдели основные идеи, ключевые понятия, важные аргументы и подготовь краткое содержательное обобщение для учебной работы.»
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 5</div>
+    <p><strong>Как попросить нейросеть сделать готовый текст для файла.</strong> Чтобы результат был удобен для вставки в файл, рекомендуется сразу уточнять формат ответа.</p>
+    <p><strong>Пример подробного промта:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Сформируй результат не как ответ в чате, а как готовый текст для файла Итоговый_анализ.md. Текст должен быть написан в официально-учебном стиле, без лишних комментариев, без пояснений для пользователя и без обращений. Нужен готовый материал, который можно сразу сохранить в файле проекта.»
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 6</div>
+    <p><strong>Использование GitHub Copilot для создания итогового файла.</strong> После создания файлов студент также может обратиться к GitHub Copilot и попросить подготовить готовый итоговый файл с текстом.</p>
+    <p><strong>Пример:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «На основе файлов [название файла.расширение] подготовь содержимое итогового файла Итоговый_анализ.md. Объедини материалы в единый логичный текст, оформи его в учебно-академическом стиле и подготовь результат для сохранения в рабочей папке проекта.»
+    </div>
+    <div>
+      <img src="images/56.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Как просить нейросеть находить преимущества, недостатки и ограничения?</div>
+    <p>Во многих учебных работах важно не только пересказать материал, но и провести оценочный анализ.</p>
+    <p><strong>Пример промта:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «На основе материалов [название файла.расширение] и [название файла.расширение] выдели преимущества, недостатки, ограничения, возможные риски и перспективы [ваша тема]. Представь результат в академической и логичной форме.»
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Как сделать аналитическую таблицу по нескольким параметрам?</div>
+    <p>Одним из наиболее удобных способов анализа является представление информации в виде таблицы. Для этого можно создать файл: <code>Таблица_сравнения.md</code>.</p>
+    <p><strong>Пример промта:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Составь сравнительную таблицу по материалам [название файла.расширение] и [название файла.расширение]. Сравни их по следующим параметрам: основная тема, ключевые идеи, преимущества, недостатки, практическое значение, применимость в образовании, итоговые выводы. Представь результат в удобной табличной форме.»
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Как попросить нейросеть оформить итоговый анализ более структурированно?</div>
+    <p>Если студент хочет, чтобы итоговый аналитический файл выглядел более аккуратно и академично, можно попросить нейросеть заранее оформить его по структуре.</p>
+    <p><strong>Пример промта:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Подготовь итоговый аналитический текст по теме [название темы] в структурированном виде. Раздели материал на логические части: введение, основные идеи, сравнительный анализ, результаты анализа, преимущества и ограничения, выводы. Текст должен быть пригоден для сохранения в итоговом файле учебной работы.»
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Рекомендация:</strong> При работе с большим количеством файлов удобно использовать функцию поиска (Ctrl+Shift+F) по всей папке проекта, чтобы быстро находить нужные фрагменты в разных документах.
+  </div>
+</section>
+<section class="section" id="tables-data">
+  <h2>Работа с таблицами и данными</h2>
+
+  <p>
+    Visual Studio Code может использоваться для хранения таблиц, просмотра данных и подготовки
+    аналитических комментариев по результатам исследования.
+  </p>
+
+  <p>
+    Работа с таблицами и данными в Visual Studio Code осуществляется с помощью специализированных
+    расширений для просмотра и редактирования Excel-, CSV- и JSON-файлов, а также инструментов анализа
+    данных, таких как Jupyter Notebook. Это позволяет открывать табличные данные прямо внутри среды,
+    выполнять их структурирование, фильтрацию, визуализацию и последующую обработку без перехода
+    в сторонние приложения.
+  </p>
+
+  <div class="step">
+    <div class="step-number">Шаг 1</div>
+    <p>Создайте отдельную подпапку «Данные».</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 2</div>
+    <p>Сохраните в неё таблицы и связанные материалы.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 3</div>
+    <p>Откройте таблицу в Visual Studio Code.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 4</div>
+    <p>Создайте отдельный файл для фиксации наблюдений и выводов.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 5</div>
+    <p>Если в рабочей папке проекта находится несколько файлов, при работе с нейросетью рекомендуется точно указывать названия нужных файлов (например, <code>Результаты_опроса.xlsx</code>, <code>Сравнение_платформ.xlsx</code>).</p>
+    <p><strong>Пример запроса:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Проанализируй данные из файла [название файла.расширение] и выдели основные наблюдения, тенденции и результаты, которые можно использовать в учебной работе.»
+    </div>
+    <p><strong>Или:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Сравни данные из файлов Сравнение_платформ.xlsx и Статистика_использования.xlsx, выдели различия, сходства и аналитические выводы.»
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 6</div>
+    <p><strong>Смысловой анализ таблицы.</strong> Одной из основных задач при работе с данными является смысловой анализ таблицы.</p>
+    <p><strong>Пример промта:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Проанализируй следующие табличные данные. Выдели основные наблюдения, тенденции, различия, закономерности и результаты, которые можно использовать в учебной аналитической работе. Представь результат в понятной, логичной и академичной форме.»
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Как попросить нейросеть выделить ключевые наблюдения по данным?</div>
+    <p>После просмотра таблицы студенту часто нужно понять, что именно важно в этих данных.</p>
+    <p><strong>Пример промта:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «На основе представленных данных выдели ключевые наблюдения, наиболее заметные показатели, важные различия и существенные тенденции. Сформулируй результат в виде кратких аналитических пунктов.»
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Как попросить нейросеть сделать краткое текстовое описание таблицы?</div>
+    <p>Иногда студенту нужно не просто проанализировать данные, а подготовить краткое описание таблицы для реферата, отчёта или доклада.</p>
+    <p><strong>Пример промта:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Подготовь краткое текстовое описание представленных данных в учебно-академическом стиле. Опиши, что показывают данные, какие показатели являются наиболее заметными и какие общие выводы можно сделать на их основе.»
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Как попросить нейросеть создать сравнительную таблицу?</div>
+    <p>Нейросеть можно использовать для создания удобной аналитической таблицы по заранее заданным параметрам.</p>
+    <p><strong>Пример промта:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Составь сравнительную таблицу по следующим данным. Сравни объекты по параметрам: название, назначение, основные функции, преимущества, недостатки, удобство использования, практическая ценность и итоговая оценка. Представь результат в табличной форме, пригодной для учебной работы.»
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Рекомендация:</strong> Для удобной работы с таблицами установите расширение <strong>Excel Viewer</strong> или <strong>CSV Editor</strong>.
+  </div>
+</section>
+<section class="section" id="exam-prep">
+  <h2>Подготовка к экзаменам и зачётам</h2>
+
+  <p>
+    Visual Studio Code может использоваться как удобное пространство для систематизации учебных материалов
+    и подготовки к экзаменам, зачётам и тестированию.
+  </p>
+
+  <p>
+    Подготовка к экзаменам и зачётам в Visual Studio Code может быть организована за счёт систематизации
+    конспектов, лекций и учебных материалов в едином проекте, быстрого поиска по всем документам,
+    использования ИИ-ассистентов для генерации вопросов, кратких выжимок и пояснений, а также применения
+    Markdown и других инструментов для создания структурированных шпаргалок, чек-листов и планов повторения.
+  </p>
+
+  <div class="step">
+    <div class="step-number">Шаг 1</div>
+    <p>Создайте отдельную папку по учебной дисциплине.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 2</div>
+    <p>Разделите материалы по темам или билетам.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 3</div>
+    <p>Создайте отдельные файлы для: кратких ответов, терминов, определений, вопросов для самопроверки и т.д.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 4</div>
+    <p>На первом этапе рекомендуется определить, какие темы необходимо повторить. Если у студента есть список экзаменационных вопросов, его можно использовать как основу для структуры подготовки.</p>
+    <p><strong>Пример запроса:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «На основе файла Вопросы_к_экзамену.docx выдели основные темы, которые необходимо изучить для подготовки к экзамену. Представь результат в виде структурированного списка.»
+    </div>
+    <div>
+      <img src="images/57.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 5</div>
+    <p>После определения тем рекомендуется подготовить по каждой теме краткий и понятный конспект.</p>
+    <p><strong>Пример запроса:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Подготовь краткий конспект по теме на основе материалов [название файла.расширение] и [название файла.расширение]. Выдели основные понятия, определения, важные положения и ключевые выводы. Текст должен быть удобен для повторения перед экзаменом.»
+    </div>
+    <div>
+      <img src="images/58.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 6</div>
+    <p>Один из самых эффективных способов подготовки – это составление готовых ответов на вопросы.</p>
+    <p><strong>Пример запроса:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Подготовь развернутый, но краткий и понятный ответ на экзаменационный вопрос: [формулировка вопроса]. Используй учебный стиль, выдели основную суть, ключевые понятия и логичный вывод.»
+    </div>
+    <p>Если у студента уже есть файл с вопросами, можно использовать более точный запрос:</p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «На основе файла Вопросы_к_экзамену.docx подготовь ответы на вопросы в удобной форме для повторения перед экзаменом.»
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 7</div>
+    <p>Для эффективного повторения полезно собрать ключевые определения и термины в отдельный файл.</p>
+    <p><strong>Пример запроса:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «На основе материалов [название файла.расширение] и [название файла.расширение] выдели основные термины, определения и важные понятия по теме. Представь результат в краткой и понятной форме для повторения.»
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 8</div>
+    <p>Если в процессе подготовки студент понимает, что какие-то темы усваиваются хуже, их рекомендуется вынести отдельно.</p>
+    <p><strong>Пример запроса:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «На основе материалов по теме объясни данный вопрос простым и понятным языком. Сделай разбор по шагам, выдели главное и укажи, что нужно запомнить в первую очередь.»
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 9</div>
+    <p>Нейросеть можно использовать для подготовки вопросов для самопроверки.</p>
+    <p><strong>Пример запроса:</strong></p>
+    <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 15px;">
+      «Составь вопросы для самопроверки по теме [название темы]. Вопросы должны проверять понимание основных понятий, связей между темами и умение кратко объяснить материал.»
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Рекомендация:</strong> Регулярно сохраняйте файлы с ответами и терминами, чтобы иметь возможность быстро повторить материал перед экзаменом.
+  </div>
+</section>
+<section class="section" id="possible-problems">
+  <h2>Возможные проблемы</h2>
+
+  <!-- Проблема 1 -->
+  <div class="step">
+    <div class="step-number">Проблема 1. Установил расширение, но оно не появилось на панели, и пользователь не знает, как его открыть</div>
+    <p><strong>Что делать:</strong></p>
+    <ul style="margin-left: 20px; list-style-type: none; padding-left: 0;">
+      <li style="margin-bottom: 8px;">— <strong>Перезапустите VS Code</strong> – часто этого достаточно.</li>
+      <li style="margin-bottom: 8px;">— Проверьте левую панель – после перезапуска должна появиться новая иконка (логотип Qwen, ChatGPT и т.п.). Нажмите на неё.</li>
+      <li style="margin-bottom: 8px;">— Если иконки нет, откройте чат через командную палитру:
+        <ul style="margin-left: 20px; list-style-type: none; margin-top: 5px;">
+          <li style="margin-bottom: 4px;">- нажмите <code>Ctrl+Shift+P</code>;</li>
+          <li style="margin-bottom: 4px;">- начните вводить название расширения, например <code>Qwen: Open Chat</code>;</li>
+          <li style="margin-bottom: 4px;">- выберите команду и нажмите Enter.</li>
+        </ul>
+      </li>
+      <li style="margin-bottom: 8px;">— Если команды тоже нет – расширение не установилось правильно. Откройте расширения (<code>Ctrl+Shift+X</code>), найдите его, нажмите шестерёнку → <strong>Disable</strong>, затем снова <strong>Enable</strong>, и перезапустите VS Code.</li>
+    </ul>
+    <div>
+      <img src="images/59.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+    <div>
+      <img src="images/60.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <!-- Проблема 2 -->
+  <div class="step">
+    <div class="step-number">Проблема 2. После установки нейросеть всё равно не отвечает, и студент не понимает, как проверить, работает ли она вообще</div>
+    <p><strong>Что делать:</strong></p>
+    <ul style="margin-left: 20px; list-style-type: none; padding-left: 0;">
+      <li style="margin-bottom: 8px;">— <strong>Проверьте интернет</strong> – откройте любой сайт в браузере (например, google.com). Если сайты не открываются – проблема с интернетом.</li>
+      <li style="margin-bottom: 8px;">— <strong>Перезапустите VS Code</strong> – закройте программу полностью, откройте снова, попробуйте написать простой запрос, например: «Привет, как дела?».</li>
+      <li style="margin-bottom: 8px;">— <strong>Проверьте, выбрано ли правильное расширение</strong> – на левой панели нажмите на иконку нейросети. Если у вас установлено несколько расширений, отключите ненужные (шестерёнка → Disable).</li>
+      <li style="margin-bottom: 8px;">— Перезагрузите окно VS Code: <code>Ctrl+Shift+P</code> → «Reload Window». Попробуйте снова.</li>
+      <li style="margin-bottom: 8px;">— Если ошибка осталась – сделайте скриншот ошибки и покажите преподавателю.</li>
+    </ul>
+  </div>
+
+  <!-- Проблема 3 -->
+  <div class="step">
+    <div class="step-number">Проблема 3. Студент не может переключиться между разными чатами (начал новую тему, а старая пропала)</div>
+    <p><strong>Что делать:</strong></p>
+    <ul style="margin-left: 20px; list-style-type: none; padding-left: 0;">
+      <li style="margin-bottom: 8px;">— В панели расширения (там, где открыт чат) обычно есть список всех ваших диалогов. Ищите слева или сверху раздел «Chats», «History» или просто список с названиями.</li>
+      <li style="margin-bottom: 8px;">— Чтобы открыть старый чат – нажмите на его название. Чтобы создать новый – нажмите кнопку «New Chat» (плюсик или «+»).</li>
+      <li style="margin-bottom: 8px;">— Возможно, расширение не сохраняет историю. Некоторые расширения требуют входа в аккаунт для сохранения истории. Проверьте настройки расширения (иконка шестерёнки).</li>
+    </ul>
+    <p><strong>Важно:</strong> старые чаты не удаляются сами. Если вы не видите список, возможно, панель истории свёрнута – нажмите на иконку «History» или «Список чатов».</p>
+    <div>
+      <img src="images/61.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <!-- Проблема 4 -->
+  <div class="step">
+    <div class="step-number">Проблема 4. Случайно закрыл панель с чатом и не знает, как её вернуть</div>
+    <p><strong>Что делать:</strong></p>
+    <ul style="margin-left: 20px; list-style-type: none; padding-left: 0;">
+      <li style="margin-bottom: 8px;">— Самый быстрый способ: нажмите <code>Ctrl+B</code> (это показывает/скрывает боковую панель).</li>
+      <li style="margin-bottom: 8px;">— Если боковая панель открыта, но чат не виден – посмотрите на иконки сверху. Нажмите на иконку вашего расширения.</li>
+      <li style="margin-bottom: 8px;">— Если иконка пропала – значит, расширение отключилось. Откройте расширения (<code>Ctrl+Shift+X</code>), найдите ваше расширение и нажмите «Enable».</li>
+      <li style="margin-bottom: 8px;">— Крайний случай: нажмите <code>Ctrl+Shift+P</code>, введите «Reload Window» и нажмите Enter. VS Code перезагрузится, и панели вернутся.</li>
+    </ul>
+    <div>
+      <img src="images/62.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <!-- Проблема 5 -->
+  <div class="step">
+    <div class="step-number">Проблема 5. В чате пропадает часть текста или ответ обрезается</div>
+    <p><strong>Что делать:</strong></p>
+    <ul style="margin-left: 20px; list-style-type: none; padding-left: 0;">
+      <li style="margin-bottom: 8px;">— У некоторых расширений есть ограничение на длину ответа. Если ответ слишком длинный, он может обрезаться.</li>
+      <li style="margin-bottom: 8px;">— Попросите нейросеть: <em>«Выдавай ответ по частям. Сначала первую половину, потом я скажу "продолжи"»</em> или <em>«Разбей ответ на несколько сообщений»</em>.</li>
+      <li style="margin-bottom: 8px;">— Если проблема повторяется постоянно – проверьте настройки расширения. Возможно, там можно увеличить лимит символов.</li>
+    </ul>
+  </div>
+
+  <!-- Проблема 6 -->
+  <div class="step">
+    <div class="step-number">Проблема 6. Не может открыть существующий файл, чтобы скопировать из него текст для нейросети</div>
+    <p><strong>Что делать:</strong></p>
+    <ul style="margin-left: 20px; list-style-type: none; padding-left: 0;">
+      <li style="margin-bottom: 8px;">— В VS Code файлы открываются так: <code>Ctrl+O</code> – открыть файл (выбрать в проводнике). Или перетащить файл мышкой из папки в окно VS Code.</li>
+      <li style="margin-bottom: 8px;">— Если файл не открывается: проверьте, не занят ли файл другой программой (например, Word или Adobe Reader). Закройте файл в других программах, попробуйте снова.</li>
+      <li style="margin-bottom: 8px;">— VS Code не умеет показывать PDF как текст. Нужно скопировать текст из другой программы (браузера, Adobe Reader) и вставить в чат. Также можно попросить GitHub Copilot Chat переконвертировать нужный файл в подходящий формат.</li>
+    </ul>
+    <div>
+      <img src="images/63.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <!-- Проблема 7 -->
+  <div class="step">
+    <div class="step-number">Проблема 7. Сохранил файл с ответом нейросети, но не может найти его потом</div>
+    <p><strong>Что делать:</strong></p>
+    <ul style="margin-left: 20px; list-style-type: none; padding-left: 0;">
+      <li style="margin-bottom: 8px;">— <strong>Где VS Code сохраняет файлы по умолчанию:</strong> если вы не выбирали папку, VS Code мог сохранить файл в последнюю открытую папку или в домашнюю директорию пользователя. Нажмите <code>Ctrl+O</code> (открыть файл) и посмотрите, в какой папке вы находитесь.</li>
+      <li style="margin-bottom: 8px;">— <strong>Как найти потерянный файл:</strong> в VS Code нажмите <code>Ctrl+P</code> (быстрый поиск файлов) и начните вводить название файла. В Windows откройте проводник, в строке поиска введите имя файла.</li>
+      <li style="margin-bottom: 8px;">— <strong>Чтобы не терять в следующий раз:</strong> перед сохранением нажмите <code>Ctrl+S</code> – появится окно «Сохранить как», где вы сами выберете папку и имя файла. Называйте файлы понятно, например: «презентация_биология_1вариант.txt».</li>
+    </ul>
+    <div>
+      <img src="images/64.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <!-- Проблема 8 -->
+  <div class="step">
+    <div class="step-number">Проблема 8. Нейросеть перестала отвечать после того, как VS Code долго был открыт</div>
+    <p><strong>Что делать:</strong></p>
+    <ul style="margin-left: 20px; list-style-type: none; padding-left: 0;">
+      <li style="margin-bottom: 8px;">— VS Code иногда «устаёт» – особенно если открыто много вкладок или расширений.</li>
+      <li style="margin-bottom: 8px;">— Перезагрузите VS Code без закрытия вкладок: нажмите <code>Ctrl+Shift+P</code>, введите «Reload Window» и нажмите Enter. VS Code перезагрузится, чат откроется заново, история сохранится.</li>
+      <li style="margin-bottom: 8px;">— Если не помогло – закройте VS Code полностью и откройте снова.</li>
+    </ul>
+  </div>
+
+  <!-- Проблема 9 -->
+  <div class="step">
+    <div class="step-number">Проблема 9. При попытке вставить длинный текст в чат VS Code зависает</div>
+    <p><strong>Что делать:</strong></p>
+    <ul style="margin-left: 20px; list-style-type: none; padding-left: 0;">
+      <li style="margin-bottom: 8px;">— Некоторые расширения не справляются с очень длинным текстом (более 10–20 тысяч символов).</li>
+      <li style="margin-bottom: 8px;">— Разбейте текст на части (по 5–10 абзацев) и отправляйте частями, как описано в проблеме 5.</li>
+      <li style="margin-bottom: 8px;">— Если VS Code завис: подождите 1–2 минуты – возможно, он обрабатывает текст. Если не отвечает – закройте VS Code через диспетчер задач (<code>Ctrl+Shift+Esc</code> → найти VS Code → «Снять задачу»). Откройте заново и попробуйте отправить текст меньшими частями.</li>
+    </ul>
+  </div>
+
+  <!-- Проблема 10 -->
+  <div class="step">
+    <div class="step-number">Проблема 10. Установил VS Code, но при попытке открыть чат с нейросетью вылезает ошибка про Python</div>
+    <p><strong>Что делать:</strong></p>
+    <ul style="margin-left: 20px; list-style-type: none; padding-left: 0;">
+      <li style="margin-bottom: 8px;">— Многие расширения для нейросетей требуют, чтобы был установлен Python.</li>
+      <li style="margin-bottom: 8px;">— <strong>Как проверить:</strong> откройте терминал в VS Code (нижняя панель, иконка <strong>&gt;_</strong> или нажмите <code>Ctrl+`</code>). Напишите <code>python --version</code> и нажмите Enter. Если пишет «не является внутренней или внешней командой» – Python не установлен.</li>
+      <li style="margin-bottom: 8px;">— <strong>Что делать:</strong> скачайте Python с официального сайта (<a href="https://www.python.org/" style="color:#6d8cff;">https://www.python.org/</a>), при установке обязательно поставьте галочку «Add Python to PATH». Перезагрузите VS Code после установки.</li>
+    </ul>
+    <p><strong>Важно:</strong> иногда будет достаточно загрузить внутреннее расширение Python.</p>
+    <div>
+      <img src="images/65.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+
+    </div>
+  </div>
+
+  <!-- Проблема 11 -->
+  <div class="step">
+    <div class="step-number">Проблема 11. Установил Python, но VS Code всё равно не видит его</div>
+    <p><strong>Что делать:</strong></p>
+    <ul style="margin-left: 20px; list-style-type: none; padding-left: 0;">
+      <li style="margin-bottom: 8px;">— <strong>Проверьте, что Python добавился в PATH:</strong> закройте VS Code полностью. Откройте командную строку Windows (<code>Win+R</code> → <code>cmd</code> → Enter). Напишите <code>python --version</code> – если показывает версию, всё хорошо.</li>
+      <li style="margin-bottom: 8px;">— <strong>Если в командной строке работает, а в VS Code нет:</strong> перезагрузите компьютер (иногда нужно). В VS Code нажмите <code>Ctrl+Shift+P</code>, введите «Python: Select Interpreter» и выберите установленную версию Python.</li>
+      <li style="margin-bottom: 8px;">— Если не помогло: переустановите Python, снова убедившись, что галочка «Add to PATH» стоит.</li>
+    </ul>
+  </div>
+
+  <div class="note">
+    <strong>💡 Общая рекомендация:</strong> При возникновении любой проблемы в первую очередь пробуйте перезагрузить окно VS Code (<code>Ctrl+Shift+P</code> → «Reload Window»). Это решает большинство мелких сбоев без потери данных.
+  </div>
+</section>
+      <div class="footer">
+        © 2026 Методическое руководство для студентов
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+
+    function closeMenuOnMobile(e) {
+      if (window.innerWidth <= 980 && e.target.tagName === 'A') {
+        document.getElementById('sidebar').classList.remove('open');
+      }
+    }
+  </script>
+</body>
+</html>

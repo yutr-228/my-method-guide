@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Яндекс Проекты | Методическое руководство</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg2: #121933;
+      --accent: #6d8cff;
+      --accent-2: #8b5cf6;
+      --text: #e5e7eb;
+      --border: rgba(255,255,255,0.12);
+      --shadow: 0 20px 50px rgba(0,0,0,0.25);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top left, #1d2a57 0%, var(--bg) 45%), linear-gradient(135deg, var(--bg), var(--bg2));
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 1001;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .sidebar {
+      width: 320px;
+      background: rgba(8,12,26,0.92);
+      backdrop-filter: blur(16px);
+      color: white;
+      padding: 30px 22px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar h1 {
+      font-size: 22px;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .sidebar p {
+      font-size: 14px;
+      color: #c7d2fe;
+      margin-bottom: 24px;
+    }
+
+    .nav-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #93c5fd;
+      margin: 22px 0 10px;
+    }
+
+    .nav a {
+      display: block;
+      color: #e2e8f0;
+      text-decoration: none;
+      padding: 11px 14px;
+      border-radius: 14px;
+      margin-bottom: 8px;
+      transition: 0.2s ease;
+      font-size: 15px;
+      border: 1px solid transparent;
+    }
+
+    .nav a:hover,
+    .nav a.active {
+      background: rgba(255,255,255,0.08);
+      transform: translateX(4px);
+      border-color: rgba(255,255,255,0.08);
+    }
+
+    .sub-link {
+      font-size: 14px !important;
+      padding: 9px 14px 9px 26px !important;
+      color: #cbd5e1 !important;
+      margin-bottom: 4px !important;
+      border-left: 2px solid rgba(255,255,255,0.08);
+      margin-left: 8px;
+    }
+
+    .sub-link:hover {
+      border-left: 2px solid var(--accent);
+    }
+
+    .content {
+      flex: 1;
+      padding: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(109,140,255,0.22), rgba(139,92,246,0.18));
+      border: 1px solid var(--border);
+      color: white;
+      padding: 48px;
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      top: -80px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.2), transparent 70%);
+    }
+
+    .hero h2 {
+      font-size: 40px;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 18px;
+      max-width: 900px;
+      color: #e0e7ff;
+    }
+
+    .section {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+      scroll-margin-top: 24px;
+    }
+
+    .section h2 {
+      font-size: 30px;
+      margin-bottom: 20px;
+      color: #c7d2fe;
+    }
+
+    .section p {
+      margin-bottom: 18px;
+      font-size: 18px;
+    }
+
+    .step {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .step-number {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      font-weight: bold;
+      padding: 8px 14px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+      font-size: 15px;
+    }
+
+    .image-placeholder {
+      background: rgba(255,255,255,0.05);
+      border: 2px dashed rgba(255,255,255,0.25);
+      text-align: center;
+      color: #cbd5e1;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      border-radius: 18px;
+      margin-top: 22px;
+      padding: 20px;
+    }
+
+    .note {
+      background: rgba(245,158,11,0.14);
+      border-left: 6px solid #f59e0b;
+      border-radius: 18px;
+      padding: 18px 20px;
+      margin-top: 20px;
+      font-size: 17px;
+    }
+
+    .footer {
+      text-align: center;
+      color: #cbd5e1;
+      font-size: 14px;
+      padding: 20px 0 30px;
+    }
+
+    @media (max-width: 980px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .layout {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 300px;
+        z-index: 1000;
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .content {
+        padding: 80px 18px 20px;
+      }
+
+      .hero {
+        padding: 30px;
+      }
+
+      .hero h2 {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <button class="menu-toggle" onclick="toggleMenu()">☰ Меню</button>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <h1>Методическое руководство</h1>
+      <p>Электронная версия методички по цифровым инструментам для студентов.</p>
+
+      <nav class="nav" onclick="closeMenuOnMobile(event)">
+        <div class="nav-title">Основные разделы</div>
+        <a href="index.html">Главная</a>
+        <a href="introduction.html">Введение</a>
+        <a href="wordmacros.html">Макросы Word</a>
+        <a href="yandex.html" class="active">Яндекс Проекты</a>
+        <a href="qwen.html">Qwen</a>
+        <a href="vscode.html">Visual Studio Code</a>
+        <a href="conclusion.html" id="nav-conclusion">Заключение</a>
+
+        <div class="nav-title">Подразделы страницы</div>
+        <a href="#about-yandex-projects" class="sub-link">О сервисе</a>
+        <a href="#create-project" class="sub-link">Создание проекта</a>
+        <a href="#upload-materials" class="sub-link">Загрузка материалов</a>
+        <a href="#chat-requests" class="sub-link">Работа с чатом (запросы)</a>
+        <a href="#tips-and-features" class="sub-link">Лайфхаки и возможности</a>
+        <a href="#share-project" class="sub-link">Как поделиться проектом или чатом</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <section class="hero">
+        <h2>Работа с сервисом «Яндекс Проекты»</h2>
+        <p>
+          «Яндекс Проекты» позволяет загружать учебные материалы и работать с ними
+          через нейросеть, получая ответы строго по выбранным документам.
+        </p>
+      </section>
+
+      <section class="section" id="about-yandex-projects">
+        <h2>О сервисе</h2>
+
+        <p>
+          При подготовке к семинару, курсовой работе или экзамену часто возникает
+          необходимость быстро найти ответ в большом количестве лекций, ГОСТов,
+          методических указаний и других учебных материалов.
+        </p>
+
+        <p>
+          Ручной просмотр PDF-файлов и текстовых документов требует значительных
+          временных затрат и не всегда является эффективным.
+        </p>
+
+        <p>
+          Сервис <strong>«Яндекс Проекты»</strong> позволяет загрузить до
+          <strong>25 учебных файлов</strong> и задавать вопросы нейросети,
+          которая формирует ответы исключительно на основе загруженных материалов.
+        </p>
+
+        <p>
+          Обычные нейросети могут <strong>«галлюцинировать»</strong>, то есть
+          придумывать несуществующие факты или добавлять информацию, которой
+          нет в исходных документах.
+        </p>
+
+        <p>
+          В отличие от них, <strong>«Яндекс Проекты»</strong> ограничивает ответ
+          только содержимым ваших файлов, что обеспечивает более высокую точность
+          и повышает доверие к результату.
+        </p>
+
+        <p>
+          Кроме того, сервис позволяет ссылаться на конкретные материалы,
+          сравнивать документы между собой, находить нужные цитаты и извлекать
+          полезную информацию для учебной работы.
+        </p>
+
+        <div class="note">
+          <strong>Примечание:</strong> Данный сервис особенно полезен при работе
+          с большим количеством учебных файлов, когда требуется быстро получить
+          ответ без ручного поиска по каждому документу.
+        </div>
+      </section>
+
+      <section class="section" id="create-project">
+        <h2>Создание проекта</h2>
+
+        <div class="step">
+          <div class="step-number">Шаг 1</div>
+          <p>
+            Перейдите на сайт <strong>alicepro.yandex.ru</strong> и откройте
+            раздел <strong>«Проекты»</strong>.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 2</div>
+          <p>
+            Нажмите кнопку <strong>«Создать проект»</strong> и укажите понятное
+            название проекта, например: <strong>«Теория игр»</strong>.
+          </p>
+          <div>
+            <img src="images/11.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">Шаг 3</div>
+          <p>
+            После создания проекта откроется рабочее пространство, внутри которого
+            будут доступны пустое хранилище материалов и окно чата для взаимодействия
+            с нейросетью.
+          </p>
+          <div>
+            <img src="images/12.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+          </div>
+        </div>
+
+        <div class="note">
+          <strong>Примечание:</strong> На следующем этапе в созданный проект можно
+          загружать учебные материалы и использовать чат для поиска информации
+          по этим документам.
+        </div>
+      </section>
+<section class="section" id="upload-materials">
+  <h2>Загрузка материалов</h2>
+
+  <p>
+    После создания проекта в него можно загрузить необходимые учебные материалы,
+    которые будут использоваться нейросетью для поиска информации и формирования ответов.
+  </p>
+
+  <p>
+    В один проект можно загрузить до <strong>25 файлов</strong>, включая текстовые документы,
+    PDF-файлы, презентации, а также ссылки на веб-страницы.
+  </p>
+
+  <div class="step">
+    <div class="step-number">Шаг 1</div>
+    <p>
+      Нажмите кнопку <strong>«Загрузить материал»</strong>.
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 2</div>
+    <p>
+      Выберите нужные файлы с компьютера или укажите ссылку на веб-страницу.
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 3</div>
+    <p>
+      При необходимости в процессе дальнейшей работы можно добавлять в проект
+      новые документы.
+    </p>
+    <div>
+      <img src="images/13.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Важно:</strong> нейросеть будет отвечать только на основе тех документов,
+    которые были добавлены в проект. Чем точнее и релевантнее подобран набор материалов,
+    тем выше будет качество ответов.
+  </div>
+
+  <div class="note" style="margin-top: 18px;">
+    <strong>Рекомендация:</strong> загружайте лекции, методические указания, ГОСТы,
+    списки литературы, конспекты и другие материалы по одной конкретной теме,
+    чтобы получить более точный и полезный результат.
+  </div>
+</section>
+
+<section class="section" id="chat-requests">
+  <h2>Работа с чатом (запросы)</h2>
+
+  <p>
+    После загрузки материалов можно перейти к работе с чатом и задавать вопросы
+    по содержимому файлов.
+  </p>
+
+  <p>
+    Вопросы рекомендуется формулировать на <strong>русском языке</strong>,
+    используя чёткие и конкретные формулировки.
+  </p>
+
+  <p>
+    Нейросеть будет отвечать, опираясь только на загруженные документы.
+    Если необходимой информации в них нет, сервис сообщит об этом,
+    а не будет придумывать ответ.
+  </p>
+
+  <p>
+    Для получения более точных и полезных ответов рекомендуется использовать
+    следующие приёмы.
+  </p>
+
+  <div class="step">
+    <div class="step-number">Приём 1</div>
+    <p>
+      <strong>Ссылка на конкретный файл.</strong><br>
+      Пример запроса:
+      <em>«В файле „Лекция_3.pdf“ найди определение …»</em>
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Приём 2</div>
+    <p>
+      <strong>Получение краткой выжимки.</strong><br>
+      Пример запроса:
+      <em>«Составь краткий конспект по теме „…“ из всех загруженных материалов»</em>
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Приём 3</div>
+    <p>
+      <strong>Сравнение документов.</strong><br>
+      Пример запроса:
+      <em>«Сравни требования из ГОСТа 2024 и старого стандарта»</em>
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Приём 4</div>
+    <p>
+      <strong>Генерация структуры работы.</strong><br>
+      Пример запроса:
+      <em>«Составь план курсовой по теме …, используя введение из файла „методичка.pdf“»</em>
+    </p>
+  </div>
+
+  <div class="note">
+    <strong>Примечание:</strong> Чем точнее сформулирован запрос, тем выше вероятность,
+    что нейросеть найдёт нужный фрагмент и выдаст полезный результат.
+  </div>
+</section>
+
+<section class="section" id="tips-and-features">
+  <h2>Лайфхаки и возможности</h2>
+
+  <p>
+    При работе с сервисом <strong>«Яндекс Проекты»</strong> можно использовать
+    дополнительные приёмы, которые позволяют сделать поиск и обработку информации
+    более удобными и эффективными.
+  </p>
+
+  <div class="step">
+    <div class="step-number">Лайфхак 1</div>
+    <p>
+      <strong>Промпт «показать цитату».</strong><br>
+      Если вы сомневаетесь в полученном ответе, можно попросить нейросеть привести
+      прямую цитату из загруженного документа с указанием источника.
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Лайфхак 2</div>
+    <p>
+      <strong>Работа с большими документами.</strong><br>
+      Даже если файл содержит большой объём информации, сервис позволяет быстро
+      находить нужные сведения без ручного пролистывания всего документа.
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Лайфхак 3</div>
+    <p>
+      <strong>Генерация вопросов для самопроверки.</strong><br>
+      После загрузки материалов можно использовать запрос:
+      <em>«Сгенерируй 10 вопросов для самопроверки по всем лекциям»</em>.
+      В результате вы получите готовый набор вопросов для повторения материала.
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Лайфхак 4</div>
+    <p>
+      <strong>Форматирование результата.</strong><br>
+      При необходимости можно попросить нейросеть представить ответ в виде
+      таблицы, списка, краткого плана или другой удобной структуры.
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Лайфхак 5</div>
+    <p>
+      <strong>Уточняющие вопросы.</strong><br>
+      Если полученный ответ оказался слишком общим, можно написать:
+      <em>«Подробнее»</em> или
+      <em>«Приведи пример из файла …»</em>.
+    </p>
+  </div>
+
+  <div class="note">
+    <strong>Рекомендация:</strong> сервис особенно эффективен в тех случаях,
+    когда пользователь не ограничивается одним вопросом, а ведёт последовательный
+    диалог по теме и уточняет полученные ответы.
+  </div>
+</section>
+<section class="section" id="share-project">
+  <h2>Как поделиться проектом или чатом</h2>
+
+  <p>
+    Сервис <strong>«Яндекс Проекты»</strong> позволяет делиться как самим проектом,
+    так и историей работы с ним, что удобно при совместной учебной деятельности,
+    подготовке групповых заданий или отправке материалов преподавателю.
+  </p>
+
+  <div class="step">
+    <div class="step-number">Шаг 1</div>
+    <p>
+      В интерфейсе проекта найдите кнопку <strong>«Поделиться»</strong>.
+    </p>
+    <div>
+      <img src="images/14.png" alt="Диалоговое окно редактора макросов" 
+     style="max-width: 100%; height: auto; border-radius: 18px; margin: 20px 0;">
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 2</div>
+    <p>
+      После этого можно отправить ссылку на проект целиком другим пользователям.
+      Вместе со ссылкой могут быть доступны загруженные материалы и история диалогов.
+    </p>
+  </div>
+
+  <div class="step">
+    <div class="step-number">Шаг 3</div>
+    <p>
+      При предоставлении доступа можно выбрать уровень прав:
+      <strong>«только просмотр»</strong> или <strong>«редактирование»</strong>.
+    </p>
+    <p>
+      Режим просмотра позволяет только знакомиться с содержимым проекта,
+      а режим редактирования даёт возможность добавлять материалы,
+      задавать вопросы и продолжать работу с проектом.
+    </p>
+  </div>
+
+  <div class="note">
+    <strong>Рекомендация:</strong> при отправке проекта преподавателю или одногруппникам
+    желательно заранее проверить, что в проекте загружены только нужные материалы
+    и отсутствуют лишние файлы.
+  </div>
+</section>
+      <div class="footer">
+        © 2026 Методическое руководство для студентов
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+
+    function closeMenuOnMobile(e) {
+      if (window.innerWidth <= 980 && e.target.tagName === 'A') {
+        document.getElementById('sidebar').classList.remove('open');
+      }
+    }
+  </script>
+</body>
+</html>
